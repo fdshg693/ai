@@ -1,0 +1,111 @@
+name: Tool release
+
+# mainへのpush(バージョン変更マージ)をトリガーに、パッケージごとの
+# git タグ(<name>-v<version>)とGitHub Releaseを自動発行する。
+# スケジュール実行はしない(コード変更が無くてもタグが増えるだけの
+# リリースは無意味なため)。判定は各ジョブ内でのタグ存在チェックのみで
+# 行うので、ここではpathsフィルタを設けない。
+#
+# 対象パッケージはrepo-tools.yamlの`release: true`なエントリから動的に
+# 決定する(discoverジョブ)。現状はworkspace内の兄弟パッケージに依存しない
+# 5パッケージ (aim-summarize/my-agentsは対象外。理由は
+# docs/integrations/cli-tools.md参照)。
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      dirs: ${{ steps.dirs.outputs.dirs }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Read release targets from repo-tools.yaml
+        id: dirs
+        run: |
+          dirs=$(uv run --with pyyaml python -c "
+          import json
+          import yaml
+
+          with open('repo-tools.yaml', encoding='utf-8') as f:
+              config = yaml.safe_load(f)
+
+          paths = [
+              tool['path']
+              for tool in config['tools'].values()
+              if tool.get('release')
+          ]
+          print(json.dumps(paths))
+          ")
+          echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
+          echo "Release targets: $dirs" >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    needs: discover
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: ${{ fromJson(needs.discover.outputs.dirs) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Read package name/version
+        id: pkg
+        working-directory: ${{ matrix.dir }}
+        run: |
+          json=$(uv version --output-format json)
+          name=$(echo "$json" | jq -r '.package_name')
+          version=$(echo "$json" | jq -r '.version')
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "tag=$name-v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether tag already exists
+        id: check
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.pkg.outputs.tag }}" > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip (no version change)
+        if: steps.check.outputs.exists == 'true'
+        run: echo "${{ steps.pkg.outputs.tag }} already exists — skipping release (no version bump for ${{ matrix.dir }})." >> "$GITHUB_STEP_SUMMARY"
+
+      # uv build はworkspaceメンバー内で実行してもリポジトリルート直下の
+      # dist/ に出力される(メンバーディレクトリ配下ではない。実機確認済み)。
+      - name: Build package
+        if: steps.check.outputs.exists == 'false'
+        working-directory: ${{ matrix.dir }}
+        run: uv build
+
+      - name: Create tag and release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.pkg.outputs.tag }}" \
+            --target "${{ github.sha }}" \
+            --title "${{ steps.pkg.outputs.tag }}" \
+            --notes "Automated release for ${{ steps.pkg.outputs.name }}." \
+            dist/*

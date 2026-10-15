@@ -1,0 +1,131 @@
+# SSOT for first-class CLI tools under tools/: tools that a SKILL.md may
+# declare (meta.requires_repo_tools / meta.requires_install) and/or that
+# participate in tool-to-tool edges (requires_tools).
+#
+# Register a tool if at least one skill references it, or if another
+# registered tool depends on it / it depends on another registered tool.
+# Do not list tools/internal/** (repo-maintenance scripts) or experimental /
+# one-off scripts that neither skills nor other tools reference
+# (e.g. tools/schedule).
+#
+# tools/internal/skill/check/check_skill_repo_tools.py cross-checks every
+# non-excluded SKILL.md's requires_repo_tools/requires_install against the
+# `path` values here, so a renamed/removed tool folder or a typo'd path fails
+# loudly instead of silently degrading to a plain-text (non-linked) mention on
+# skills-site (see skills-site/scripts/build-catalog.mjs's
+# resolveRequiresRepoTools).
+#
+# Each entry may have requires_tools: a map of other keys in this file to a
+# kind (library / subprocess / family). Omit or leave empty if the tool does
+# not depend on other repo tools. Extra-repo deps (git, PyPI) do not belong
+# here. tools/internal/skill/check/check_repo_tool_relations.py checks that
+# targets exist, kinds are valid, and library edges match workspace deps in
+# that tool's pyproject.toml.
+#
+# Each entry may have description: a repo-relative locator
+# `<path>[#<dotted key>]` pointing at that tool's one-line summary, e.g.
+# tools/aim/pyproject.toml#project.description. The path is relative to this
+# file (the same base as `install`). TOML / JSON / YAML targets require the
+# `#key`; any other target (README.md, ...) is read as plain text, using its
+# first heading line (after skipping YAML frontmatter). The summary source is
+# the tool's own manifest when it has one, otherwise its README. Only
+# skill-tools `list-tools` resolves this field (for its fourth column and
+# --json); the other consumers ignore it.
+#
+# skills-site also reads this file (skills-site/scripts/repo-tools-registry.mjs)
+# to render the public "installable tools" list (name + GitHub folder link
+# only, no install instructions).
+#
+# .github/workflows/tool-release.yml is a third consumer: entries with
+# `release: true` are the tag+GitHub Release targets (workspace-sibling-free
+# packages only). Entries without `release` (or with `release: false`) are
+# not release targets — see docs/integrations/cli-tools.md for why
+# aim-summarize / my-agents are excluded.
+#
+# Excluded from the skill-path check: meta-plugins/** (its SKILL.md files reuse
+# requires_repo_tools to mean "files this meta-skill documents", not "CLI
+# dependency" — see docs/repo-wide/tool-companion-skills.md) and
+# tools/internal/** (internal repo-maintenance scripts, never something a
+# skill's user installs).
+
+tools:
+  aim:
+    path: tools/aim
+    install: "uv tool install --editable tools/aim"
+    description: tools/aim/README.md
+    release: true
+  aim2:
+    path: tools/aim2
+    install: "cd tools/aim2 && pnpm add -g ."
+    description: tools/aim2/package.json#description
+  aim-summarize:
+    path: tools/aim-use/aim-summarize
+    install: "uv tool install --editable tools/aim-use/aim-summarize"
+    description: tools/aim-use/aim-summarize/pyproject.toml#project.description
+    requires_tools:
+      aim: library
+  grepapp:
+    path: tools/grepapp
+    install: "uv tool install --editable tools/grepapp"
+    description: tools/grepapp/pyproject.toml#project.description
+    release: true
+  mslearn:
+    path: tools/mslearn
+    install: "uv tool install --editable tools/mslearn"
+    description: tools/mslearn/pyproject.toml#project.description
+    release: true
+  awsdocs:
+    path: tools/awsdocs
+    install: "uv tool install --editable tools/awsdocs"
+    description: tools/awsdocs/pyproject.toml#project.description
+    release: true
+  tav:
+    path: tools/tav-cli
+    install: "uv tool install --editable tools/tav-cli"
+    description: tools/tav-cli/pyproject.toml#project.description
+    release: true
+  textgraph:
+    path: tools/textgraph
+    install: "uv tool install --editable tools/textgraph"
+    description: tools/textgraph/pyproject.toml#project.description
+    release: true
+  vscode-profiles:
+    path: tools/vscode-profiles
+    install: "uv tool install --editable tools/vscode-profiles"
+    description: tools/vscode-profiles/pyproject.toml#project.description
+  agents-rules:
+    path: tools/agents-rules
+    install: "uv tool install --editable tools/agents-rules"
+    description: tools/agents-rules/pyproject.toml#project.description
+  ctx7:
+    path: tools/ctx7
+    install: "uv tool install --editable tools/ctx7"
+    description: tools/ctx7/pyproject.toml#project.description
+    release: true
+  pyinspect:
+    path: tools/pyinspect
+    install: "uv tool install --editable tools/pyinspect"
+    description: tools/pyinspect/pyproject.toml#project.description
+  my-agents:
+    path: tools/my-agents
+    install: "uv tool install --editable tools/my-agents"
+    description: tools/my-agents/pyproject.toml#project.description
+    requires_tools:
+      mslearn: library
+      tav: library
+  icw:
+    path: tools/interactive-cli-wrapper
+    install: "uv tool install --editable tools/interactive-cli-wrapper"
+    description: tools/interactive-cli-wrapper/pyproject.toml#project.description
+  linear-cli:
+    path: tools/linear-cli
+    install: "cd tools/linear-cli && pnpm add -g ."
+    description: tools/linear-cli/README.md
+  ona-run:
+    path: tools/ona-run
+    install: "uv tool install --editable tools/ona-run"
+    description: tools/ona-run/README.md
+  skill-tools:
+    path: tools/skill-tools
+    install: "uv tool install --editable tools/skill-tools"
+    description: tools/skill-tools/pyproject.toml#project.description

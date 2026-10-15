@@ -1,0 +1,88 @@
+name: Tools site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools-site/**'
+      - 'repo-tools.yaml'
+      - 'tools/aim/README.md'
+      - 'tools/grepapp/README.md'
+      - 'tools/mslearn/README.md'
+      - 'tools/tav-cli/README.md'
+      - 'tools/ctx7/README.md'
+      - '.github/workflows/tools-site.yml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools-site/**'
+      - 'repo-tools.yaml'
+      - 'tools/aim/README.md'
+      - 'tools/grepapp/README.md'
+      - 'tools/mslearn/README.md'
+      - 'tools/tav-cli/README.md'
+      - 'tools/ctx7/README.md'
+      - '.github/workflows/tools-site.yml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  build:
+    name: Generate and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build static site
+        run: pnpm --filter ai-tools-doc-site run build
+      - name: Configure GitHub Pages
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+      - name: Upload static site artifact
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: tools-site/docs/.vitepress/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

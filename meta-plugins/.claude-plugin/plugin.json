@@ -1,0 +1,5 @@
+{
+  "name": "meta-plugins",
+  "version": "0.1.0",
+  "description": "Skills for maintaining this repository itself (generated config/marketplace files, regeneration workflow)"
+}

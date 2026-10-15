@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "ai-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "fdshg693/AI"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "meta@ai-plugins": true
+  }
+}

@@ -1,0 +1,29 @@
+# .github/workflows/pr-agent.yml
+# https://docs.pr-agent.ai/usage-guide/automations_and_usage/#github-action
+# 複数のAIプロバイダが利用可能だが、現在は OpenAI を採用
+# 以下のツールをコメントに書くことで、利用可能
+# ツール一覧: https://docs.pr-agent.ai/tools/
+# - `/describe`：PRの内容を要約してPR概要を作成
+# - `/review`：PRのコードをレビューして、改善点や問題点を指摘
+name: PR Agent
+on:
+  # Issue または Pull Request の通常コメントが作成・編集・削除されたときに発火
+  # 下の job の IF 文で、PR に対するコメントかどうかを判定して、PR に対するコメントのときのみ、PR Agent が動くようにする
+  issue_comment:
+jobs:
+  pr_agent_job:
+    # PRのOWNER/COLLABORATORによるコメントのみ起動する（誰でも書けるコメントで
+    # contents:write権限込みのエージェントを無制限に動かさないための制限）
+    if: github.event.issue.pull_request && contains(fromJSON('["OWNER", "COLLABORATOR"]'), github.event.comment.author_association)
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR Agent action step
+        id: pragent
+        uses: the-pr-agent/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,66 @@
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
+azure_location := env_var_or_default("AZURE_LOCATION", "eastasia")
+azure_resource_group := env_var_or_default("AZURE_RESOURCE_GROUP", "rg-ai-skill-catalog")
+azure_static_site := env_var_or_default("AZURE_STATIC_SITE_NAME", "ai-skill-catalog")
+github_repository := env_var_or_default("GITHUB_REPOSITORY", "fdshg693/AI")
+
+default:
+    @just --list
+
+# Install dependencies
+install:
+    pnpm install
+
+# Run the Astro dev server (rebuilds the catalog first)
+dev:
+    pnpm run dev
+
+# Build the catalog and static site into dist/
+build:
+    pnpm run build
+
+# Preview the built site from dist/
+preview:
+    pnpm run preview
+
+# Validate publication targets, frontmatter, and ZIPs
+validate:
+    pnpm run validate
+
+# Run the test suite
+test:
+    pnpm run test
+
+# Run build, validate, and test in sequence
+check: build validate test
+
+# Lint the Bicep templates
+infra-validate:
+    az bicep build --file "infra/main.bicep" --stdout > $null
+
+# Create the resource group and Free-tier Static Web App
+azure-provision: infra-validate
+    az deployment sub create --location "{{azure_location}}" --template-file "infra/main.bicep" --parameters location="{{azure_location}}" resourceGroupName="{{azure_resource_group}}" staticSiteName="{{azure_static_site}}"
+
+# Print the Static Web App deployment token (treat as secret)
+azure-token:
+    az staticwebapp secrets list --resource-group "{{azure_resource_group}}" --name "{{azure_static_site}}" --query properties.apiKey --output tsv
+
+# Send the deployment token to the GitHub repo secret AZURE_STATIC_WEB_APPS_API_TOKEN
+azure-set-github-secret:
+    az staticwebapp secrets list --resource-group "{{azure_resource_group}}" --name "{{azure_static_site}}" --query properties.apiKey --output tsv | gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN --repo "{{github_repository}}"
+
+# Print the Static Web App's default hostname
+azure-url:
+    az staticwebapp show --resource-group "{{azure_resource_group}}" --name "{{azure_static_site}}" --query defaultHostname --output tsv
+
+# Set OPENROUTER_API_KEY as an SWA Application setting from the local environment (mise loads skills-site/.env); the value is never printed
+azure-set-openrouter-key:
+    if (-not $env:OPENROUTER_API_KEY) { Write-Error "OPENROUTER_API_KEY is not set - add it to skills-site/.env (mise must be activated in this shell) or export it before running this recipe"; exit 1 }
+    az staticwebapp appsettings set --resource-group "{{azure_resource_group}}" --name "{{azure_static_site}}" --setting-names "OPENROUTER_API_KEY=$env:OPENROUTER_API_KEY" --output none
+    Write-Host "OPENROUTER_API_KEY set on {{azure_static_site}}"
+
+# Check whether OPENROUTER_API_KEY is set as an SWA Application setting (the value itself is never printed)
+azure-openrouter-key-status:
+    az staticwebapp appsettings list --resource-group "{{azure_resource_group}}" --name "{{azure_static_site}}" --query "contains(keys(properties), 'OPENROUTER_API_KEY')" --output tsv

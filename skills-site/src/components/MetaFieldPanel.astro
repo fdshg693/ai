@@ -1,0 +1,82 @@
+---
+// Renders the 9 SKILL.md `meta:` subfields (meta_field.yaml is the SSOT for
+// their labels/format/default) as a label+value list. A field whose value
+// equals its meta_field.yaml default (e.g. "none") is still shown as a row,
+// just muted, so skills can be compared side by side without rows jumping
+// around. requiresSkills/requiresHooks/requiresRepoTools were already
+// resolved to link-bearing structures by build-catalog.mjs; everything else
+// is a plain scalar string.
+import { metaFieldRegistry, skillHref } from "../lib/catalog.js";
+
+const { skill } = Astro.props;
+const meta = skill.meta;
+---
+<dl class="meta-field-list">
+  {metaFieldRegistry.map((entry) => {
+    const value = meta[entry.camelField];
+    let body;
+    if (entry.camelField === "requiresSkills") {
+      body = value.length === 0 ? (
+        <span class="meta-field-muted">なし</span>
+      ) : (
+        <ul class="meta-field-value-list">
+          {value.map((item) => (
+            <li>
+              {item.path ? (
+                <a class="meta-field-link meta-field-link--internal" href={skillHref(item.path)}>
+                  {item.name}<span class="meta-field-link-icon" aria-hidden="true"> →</span>
+                </a>
+              ) : (
+                <span>{item.name}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+    } else if (entry.camelField === "requiresHooks") {
+      body = value === null ? (
+        <span class="meta-field-muted">なし</span>
+      ) : (
+        <a class="meta-field-link meta-field-link--external" href={value.href} target="_blank" rel="noreferrer">
+          {value.text}<span class="meta-field-link-icon" aria-hidden="true"> ↗</span>
+          <span class="visually-hidden">（外部サイト、新しいタブで開く）</span>
+        </a>
+      );
+    } else if (entry.camelField === "requiresRepoTools") {
+      body = value.length === 0 ? (
+        <span class="meta-field-muted">なし</span>
+      ) : (
+        <ul class="meta-field-value-list">
+          {value.map((item) => (
+            <li>
+              {item.href ? (
+                <a class="meta-field-link meta-field-link--external" href={item.href} target="_blank" rel="noreferrer">
+                  {item.text}<span class="meta-field-link-icon" aria-hidden="true"> ↗</span>
+                  <span class="visually-hidden">（外部サイト、新しいタブで開く）</span>
+                </a>
+              ) : (
+                <span>{item.text}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+    } else if (entry.camelField === "version" || entry.camelField === "status") {
+      // version/statusのdefault（"1.0.0"/"draft"）は「未設定」を示すsentinelではなく
+      // それ自体が有効な値なので、他フィールドと違いdefault一致でミュートしない。
+      body = <span>{value}</span>;
+    } else {
+      body = value === entry.default ? (
+        <span class="meta-field-muted">なし</span>
+      ) : (
+        <span>{value}</span>
+      );
+    }
+    return (
+      <div class="meta-field-row">
+        <dt class="meta-field-label" title={entry.format}>{entry.description}</dt>
+        <dd class="meta-field-value">{body}</dd>
+      </div>
+    );
+  })}
+</dl>

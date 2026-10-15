@@ -1,0 +1,15 @@
+node_modules/
+
+generated/
+public/downloads/
+public/build-info.json
+public/ai-index.json
+api/data/ai-index.json
+api/data/search-index.json
+api/local.settings.json
+api/node_modules/
+dist/
+.astro/
+
+# az cli state isolated to this directory via AZURE_CONFIG_DIR (see mise.toml)
+.azure/

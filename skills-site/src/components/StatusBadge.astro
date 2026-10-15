@@ -1,0 +1,10 @@
+---
+import { statusText as getStatusText } from "../lib/status.js";
+
+const { status } = Astro.props;
+
+const text = getStatusText(status);
+---
+<span class={`status-badge status-badge--${status.key}`} title={text.description} aria-label={`${text.label}。${text.description}`}>
+  {text.label}
+</span>

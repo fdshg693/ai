@@ -1,0 +1,398 @@
+{
+  "_generated_by": "tools/internal/plugin_meta/generate/generate_skill_catalog.py (DO NOT EDIT MANUALLY)",
+  "claude-plugins/cicd": [
+    {
+      "path": "claude-plugins/cicd/skills/github-agentic-workflows",
+      "name": "github-agentic-workflows",
+      "description": "Create, update, review, compile, and debug GitHub Agentic Workflows (gh-aw) markdown workflows. Use when a task mentions GAW, gh-aw, agentic workflows, .github/workflows/*.md, safe outputs, workflow frontmatter, or agentic workflow run failures."
+    },
+    {
+      "path": "claude-plugins/cicd/skills/issue-triage",
+      "name": "issue-triage",
+      "description": "Skill to triage GitHub issues. It can read issue content, comments, and labels, and then suggest actions such as labeling, assigning, or closing the issue."
+    },
+    {
+      "path": "claude-plugins/cicd/skills/pr-agent-docs",
+      "name": "pr-agent-docs",
+      "description": "Use when answering questions about PR-Agent (also known as Qodo Merge / CodiumAI PR-Agent) — installation (GitHub/GitLab/Bitbucket/Azure/local), configuration, automation, tools such as /review /describe /improve /ask /add_docs /generate_labels /update_changelog, core abilities (interactivity, compression, dynamic context, ticket context), or how to run and customize the open-source PR review agent. Grounds answers in the latest official docs from The-PR-Agent/pr-agent instead of training-data memory, which may be stale."
+    }
+  ],
+  "claude-plugins/coding": [
+    {
+      "path": "claude-plugins/coding/skills/brainstorming",
+      "name": "brainstorming",
+      "description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements, and design before implementation, and ends after writing the approved spec."
+    },
+    {
+      "path": "claude-plugins/coding/skills/merge-proposal",
+      "name": "merge-proposal",
+      "description": "現在のブランチに別ブランチを取り込む(マージする)前に、git merge-tree で作業ツリーを触らずにマージを試算し、(1)コンフリクト解消案、(2)取り込み内容のレビューと修正案、(3)取り込みを受けて現在のブランチが行うべき追従修正、の3つの提案ファイルを出力する。どれを行うかはユーザーが絞れる(例としてコンフリクト解消案だけ)。提案までで止まり、実際のmerge/rebase・コンフリクト解消の適用・コミットなど、その後のマージ作業は扱わない。「mainを取り込む前にコンフリクトを確認して」「developをマージしたら何が起きるか見て」「mainの変更を取り込む提案を出して」「コンフリクト解消案だけ出して」のような依頼に使う。"
+    },
+    {
+      "path": "claude-plugins/coding/skills/okf-spec",
+      "name": "okf-spec",
+      "description": "Use when finding, reading, authoring, or answering questions about Open Knowledge Format (OKF) bundles or concept documents — a markdown+YAML-frontmatter convention (GoogleCloudPlatform/knowledge-catalog) for knowledge that AI agents write and consume. Grounds answers in a periodically re-fetched snapshot of the official spec instead of training-data memory, which may be stale or predate v0.2's provenance/trust/lifecycle/attestation fields."
+    },
+    {
+      "path": "claude-plugins/coding/skills/parallel-agent-worktree",
+      "name": "parallel-agent-worktree",
+      "description": "複数のClaude Codeセッション（同一ローカル環境上で並行して動くエージェント）が、Linearの未着手issueをタスクキューとして使い、それぞれ別のgit worktreeで衝突なく1タスクずつ分担して作業を進めるためのスキル。Linear issueの検索→claim→worktree作業→完了報告までの一連の流れを自然言語指示で進めたい場合に使う。タスクグループ（Linear Project + `.linear-cli/config.json`の`project`既定値）単位でアクティブな未着手issueを絞り込み、依存関係（`depends_on`）を持つissue群は同じブランチ・worktreeを再利用しながら順番に実装する。専用のトラッキングissue1件で「どの環境がどのworktreeを使用中か」を追跡し、空き状況を判定可能にする。専用オーケストレーター（常駐プロセス等）は前提とせず、1タスクのcommit・push完了をもって処理は完結する（次のタスクへ自動で継続しない）。"
+    },
+    {
+      "path": "claude-plugins/coding/skills/pr-check",
+      "name": "pr-check",
+      "description": "PRの作成・状態確認・レビュー依頼・GitHub Actions操作を行う"
+    },
+    {
+      "path": "claude-plugins/coding/skills/proposing-flow",
+      "name": "proposing-flow",
+      "description": "実装依頼（「〜を実装して」等）を受けた直後、または実装作業を進める中で理解が深まった時点で、調査・実装・テストの各ステップとその実行主体（メインエージェント/サブエージェント）の提案を得るために使う。呼び出されたメインエージェント自身が、実装依頼の全文と自分が既に会話の中で把握している理解・調査結果をまとめ、Agent toolでflow-proposerサブエージェントに渡してフロー提案を受け取る、という手順を指示するだけの薄いスキルである。実際の調査・判定ロジックは`.claude/agents/flow-proposer.md`側にある。ユーザーの明示的な呼び出しに限らず、実装系の依頼を受けたAIエージェント自身が着手前に自律的に呼び出してもよい。巨大なタスクをメインエージェントだけで抱え込む、逆に些細な作業を過剰に分割する、といった不適切なワークフロー選定を防ぎたい場面で使う。"
+    },
+    {
+      "path": "claude-plugins/coding/skills/review",
+      "name": "review",
+      "description": "コードの差分を読み取り専用でレビューする。(1) 現在のブランチから指定したマージ先ブランチへPRを作成したと仮定してのブランチ間差分レビュー、(2) まだコミットしていない変更(staged/unstaged/untrackedファイル)のレビュー、(3) GitHub上の既存PR(番号・URL指定)の差分とコメントをgh CLIで取得してのPRレビュー、に対応する。実際のgit操作(checkout/merge/commit/push/add/stash等)やPRへのコメント投稿・approve等、状態を変更する操作は一切行わない。「このブランチをmainにマージする想定でレビューして」「mainへのマージ前チェックをして」のようなマージ先ブランチが分かっている差分レビュー、「今の変更をレビューして」「コミット前にチェックして」「git diffを見てレビューして」のような作業ツリーの変更レビュー、「PR"
+    },
+    {
+      "path": "claude-plugins/coding/skills/systematic-debugging",
+      "name": "systematic-debugging",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"
+    },
+    {
+      "path": "claude-plugins/coding/skills/task-tracker",
+      "name": "task-tracker",
+      "description": "複数タスクを行き来しながら開発する際に、タスクごとの現状(CURRENT.md)とセッションIDを`.claude/tasks/{task-name}/`に自動追跡する。新規タスクの開始・既存タスクの再開の両方を `/task-tracker <task-name>` の1コマンドで扱う。"
+    }
+  ],
+  "claude-plugins/meta": [
+    {
+      "path": "claude-plugins/meta/skills/claude-agent-sdk",
+      "name": "claude-agent-sdk",
+      "description": "Use when building, reviewing, or troubleshooting Python or Node.js/TypeScript applications that use Anthropic's Claude Agent SDK, including agent loops, sessions, tools, MCP, permissions, hooks, streaming, structured output, and deployment. Use the official Claude Code documentation cache for API details that may have changed."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-cli-docs",
+      "name": "claude-cli-docs",
+      "description": "Use when answering questions about the `claude` command's CLI interface — options, flags, and subcommands (e.g. -p/--print, --dangerously-skip-permissions, mcp, plugin, agents, doctor). Grounds answers in the CLI's own `claude --help` output instead of training-data memory, which may be stale. For Claude Code feature/settings concepts documented on the official site (hooks, skills, settings.json), use claude-code-docs instead."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-cli-use",
+      "name": "claude-cli-use",
+      "description": "Use when delegating a coding, analysis, or research task to the Claude Code CLI (`claude`) as a one-shot non-interactive worker, including choosing Sonnet, Haiku, or Fable by task difficulty. Do not use for interactive Claude Code sessions or for answering detailed CLI option questions."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-code-debugging",
+      "name": "claude-code-debugging",
+      "description": "Claude Code自体（CLIツール）のデバッグを一箇所で完結させたい時に使う。既存ログの所在・読み方、デバッグフラグ・スラッシュコマンドでの切り分け、settings起因の不具合切り分け、hookを使ったログの仕込み方、OpenTelemetryでの計装、サブエージェント/CLI分離でのテスト手法、巨大ログの抽出+aim CLIでの要約まで扱う。「Claude Codeがなぜ期待通り動かないか調べたい」「hookやOTelでログを仕込みたい」「セッションログを抽出して分析したい」といった要求で使う。"
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-code-docs",
+      "name": "claude-code-docs",
+      "description": "Use when answering questions about Claude Code (CLI) features, settings, hooks, skills, slash commands, subagents, MCP, memory, etc. Grounds answers in the latest official docs (code.claude.com) instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-code-memory",
+      "name": "claude-code-memory",
+      "description": "Guides placement of project knowledge in Claude Code, including CLAUDE.md, `.claude/rules/*.md`, and auto memory. Use when deciding what belongs in each mechanism, editing its configuration, or troubleshooting memory behavior."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-code-openai-gateway",
+      "name": "claude-code-openai-gateway",
+      "description": "Use when the user wants Claude Code to run on a non-Anthropic model such as an OpenAI model, or asks about ANTHROPIC_BASE_URL / LLM gateway / LiteLLM proxy setup, per-session vs global model switching, or debugging a Claude Code session that talks to a custom Messages-API-compatible endpoint."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-logs-investigate",
+      "name": "claude-logs-investigate",
+      "description": "Claude Code自体(CLIツール)の動作ログ・デバッグ情報・テレメトリを調査する、または新たに記録する仕組みを仕込む際に使う。セッショントランスクリプトやシェルスナップショットなど既存ログの場所と見方に加え、デバッグフラグ・スラッシュコマンドでの原因切り分け、hookを使った独自ログの仕込み、OpenTelemetryによるテレメトリ送信設定までを扱う。「Claude Codeのログを見たい/調べたい」「なぜ設定やhook、MCPが効かないか調査したい」「ツール呼び出し履歴を記録したい」「テレメトリ/OTelを設定したい」といった要求で使う。"
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-mechanisms",
+      "name": "claude-mechanisms",
+      "description": "Use when deciding which Claude Code mechanism to reach for — CLAUDE.md/rules/auto memory, a SKILL, a subagent, or a hook — before persisting knowledge, automating a workflow, or delegating a task. Also covers the anti-pattern of hoarding static prompt files instead of using SKILLS. For how to actually write each mechanism, defer to the dedicated skill it points to."
+    },
+    {
+      "path": "claude-plugins/meta/skills/claude-settings",
+      "name": "claude-settings",
+      "description": "Claude Codeの設定ファイル（settings.json / settings.local.json / 環境変数）を追加・変更する際に使う。permissionsルールの追加、hooksの登録、サンドボックス設定、環境変数の設定、スコープ（User/Project/Local/Managed）選びで迷った時に使う。"
+    },
+    {
+      "path": "claude-plugins/meta/skills/skill-maintenance",
+      "name": "skill-maintenance",
+      "description": "Maintains the Claude-related skills under `claude-plugins/meta/skills` by refreshing the Claude CLI help snapshot and Claude Code documentation snapshot, inspecting semantic changes, and updating affected skills. Use when explicitly checking whether those skills are stale after a Claude CLI or Claude Code documentation update."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-hooks",
+      "name": "writing-hooks",
+      "description": "Use when creating or editing Claude Code hooks (.claude/settings.json hooks, PreToolUse/PostToolUse/Stop/UserPromptSubmit etc.) — choosing events/matchers/types, writing safe commands, setting exit codes correctly, avoiding common pitfalls."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-output-styles",
+      "name": "writing-output-styles",
+      "description": "Use when creating or editing a Claude Code output style (.claude/output-styles/*.md, ~/.claude/output-styles/*.md, or a plugin's output-styles/ directory) — choosing keep-coding-instructions, writing frontmatter, distinguishing output styles from CLAUDE.md/subagents/skills/--append-system-prompt, and switching styles via /config."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-plugins",
+      "name": "writing-plugins",
+      "description": "Use when creating, structuring, or distributing a Claude Code plugin (.claude-plugin/plugin.json, skills/agents/hooks/mcp/lsp bundling, or a marketplace.json) — choosing plugin vs standalone .claude/, manifest fields, directory layout, versioning, and avoiding common pitfalls."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-rules",
+      "name": "writing-rules",
+      "description": "Guides creation and maintenance of Claude Code `.claude/rules/*.md` files. Use when adding or updating path-scoped project guidance, organizing existing rules, or bootstrapping rules for a new or largely undocumented codebase."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-skill",
+      "name": "writing-skill",
+      "description": "Use when creating, editing, or evaluating a SKILL.md against best practices — lightweight, everyday guidance covering both writing and reviewing skills. For high-cost subagent-verified TDD testing before deploying critical or widely-shared skills, use writing-skill-complex instead."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-skill-complex",
+      "name": "writing-skill-complex",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment"
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-skill-web",
+      "name": "writing-skill-web",
+      "description": "Use when creating or editing a skill that needs web content — either a pre-downloaded/cached reference snapshot (XML sitemap or llms.txt URL index, or Markdown docs mirrored from a GitHub repository via gh api, refreshed on a freshness window) or dynamic on-the-spot web search/fetch of unknown URLs. Covers choosing between the static-snapshot pattern and the dynamic-query pattern, provides reusable sitemap/llms.txt normalization, compact-tree, selection, constrained-fetch, and GitHub docs-mirror templates, plus freshness checks and an AI-generated excerpt workflow for large indexes. For general skill-writing practice (naming, description, structure, checklist) see writing-skill first — this skill does not repeat it. For dynamic search/fetch, delegates to tav-cli/tav-lit rather than duplicating a client."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-subagents",
+      "name": "writing-subagents",
+      "description": "Use when creating or editing Claude Code subagents (.claude/agents/*.md, ~/.claude/agents/*.md, or the --agents CLI flag) — choosing scope and frontmatter fields, restricting tools, writing effective descriptions, model/permission settings, and avoiding common pitfalls."
+    },
+    {
+      "path": "claude-plugins/meta/skills/writing-workflows",
+      "name": "writing-workflows",
+      "description": "Use when creating, editing, or reviewing a Claude Code dynamic workflow (.claude/workflows/*.js orchestration scripts using agent()/pipeline()/parallel()/phase()) — deciding whether a task warrants a workflow, structuring or auditing the script, choosing a save location, and passing args to a saved workflow."
+    }
+  ],
+  "claude-plugins/my-tools": [
+    {
+      "path": "claude-plugins/my-tools/skills/aim-cli",
+      "name": "aim-cli",
+      "description": "OpenRouter経由でAIモデルを単発呼び出しする`aim` CLIツールの使い方を説明する。プロンプトをAIモデルに投げて応答を得たい、プロンプト内の`@path`でファイルやディレクトリの内容を取り込みたい、複数ファイルやスキルフォルダへ同じ質問（要約・バグ指摘など）を`--parallel`で一括したい、利用可能なモデル一覧を確認したい、タスクの難易度に応じてどのモデルを使うか選定したい場合に使う。DBへの永続化が必要な場合は`aim-summarize`を使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/aim-lib",
+      "name": "using-aim-library",
+      "description": "`tools/aim` のグローバルインストール済み Python 実装をライブラリとして使い、OpenRouter 経由で AI モデルへ単発リクエストを送る方法を説明する。Python コードからプロンプトを送信したい、モデル略記を解決したい、応答本文を取り出したい場合に使う。CLI コマンドを実行する場合は `aim-cli` を使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/aim-summarize",
+      "name": "aim-summarize",
+      "description": "リポジトリ内のファイルをファイル単位でAI要約し、SQLite DB（.aim-use/summaries.db）に永続化する`aim-summarize` CLIツールの使い方を説明する。ファイル要約を生成・更新したい、変更されたファイルだけ再要約したい、DBから要約を取得したい場合に使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/aim2-cli",
+      "name": "aim2-cli",
+      "description": "複数プロバイダ（OpenAI, Anthropic, Google Gemini, OpenRouter, Ollama等）に直接対応したAIモデルCLIツール`aim2`の使い方を説明する。プロンプトをAIモデルに投げて応答を得たい、`--session-id`（互換`--thread-id`）でローカル会話継続したい、プロンプト内の`@path`でファイルやディレクトリの内容を取り込みたい、複数プロンプトを`--parallel`で一括並列実行したい、利用可能なモデル一覧を確認したい場合に使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/aws-docs",
+      "name": "aws-docs",
+      "description": "Search and fetch official AWS documentation (docs.aws.amazon.com, AWS Blog, What's New, re:Post Knowledge Center, CDK/CloudFormation references) and check regional availability via the self-built `awsdocs` CLI, a fastmcp wrapper around the official AWS Knowledge MCP Server (https://knowledge-mcp.global.api.aws). Use when you need AWS service docs, API/SDK/CLI references, troubleshooting articles, recent AWS launches, or whether a service/API/CFN resource is available in a region. Do not use for general web research (use `tav-cli`), Microsoft/Azure docs (use `ms-learn`), or running AWS APIs."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/grep-app",
+      "name": "grep-app",
+      "description": "Search real-world code examples across 1M+ public GitHub repositories via a self-built fastmcp CLI wrapper around the grep.app MCP server (https://mcp.grep.app). Use when you need to see how other real projects actually use an API, pattern, or library — literal code search across public GitHub, not semantic/keyword search."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/inspecting-python-libraries",
+      "name": "inspecting-python-libraries",
+      "description": "Downloads a PyPI wheel and writes a local file-tree index so the agent can read a Python library's distribution as a primary source. Use when you need to inspect shipped files, public module surface, or implementation — not docs. Triggers: wheel をダウンロードする, 配布物の中身を読む, inspect a published package, read the actual source of a PyPI library. Prefer `use-context` for official docs, setup, and migration guides; `grep-app` for how other repos use the library."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/interactive-cli-wrapper",
+      "name": "interactive-cli-wrapper",
+      "description": "Drive an interactive (TTY-only, REPL-style) CLI process from an AI agent one Bash-tool call per turn — start it as a background session, send one line of input, wait for the turn to settle, get the accumulated output back. Use when a CLI has no non-interactive/print flag and must be operated as a live REPL (e.g. Cursor CLI's `agent` run without `-p`). Not for one-shot non-interactive delegation to Cursor CLI (use cursor-cli-use for `agent -p`) and not for CLIs that already support a scriptable non-interactive mode."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/linear-cli",
+      "name": "linear-cli",
+      "description": "未着手issue検索・issue作成・ステータス更新（担当者割当込み）・ラベル絞り込み/付与/更新・コメント追加/一覧取得/削除・issue詳細取得の各操作を提供する`linear-cli` CLIツールの使い方を説明する。Linear上のissueをタスクキューとして検索・claim・完了報告したい場合、トラッキング用issueの存在確認・作成・コメントによる占有状況管理をしたい場合、およびラベルでの絞り込み・issue descriptionの詳細取得をしたい場合に使う。issueの削除・複数team横断の一括操作は対象外。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/ms-digest",
+      "name": "ms-digest",
+      "description": "Microsoft Learn/Azure公式ドキュメントを`mslearn`で検索した結果ファイルのうち、自分で1件ずつ読む代わりに`aim --parallel`で並列にAI抽出させたいものをまとめて処理し、関連する内容だけを報告させるCLI連携スキル。(a) 結果件数が多くタイトルだけでは関連性を判断しづらい場合(目安5件以上)に全件を渡して関連するものだけ絞り込ませたいとき、(b) `index.md`から読みたいファイルを選んだ後、その中に文字数が大きいファイルが複数あり個別Readせずまとめて抽出させたいとき、のいずれかで使う。1ファイルだけを抽出したい場合は`aim-cli`を直接使えばよい。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/ms-learn",
+      "name": "ms-learn",
+      "description": "Search and fetch official Microsoft/Azure documentation (and code samples) via a self-built fastmcp CLI wrapper around the official Microsoft Learn MCP server (https://learn.microsoft.com/api/mcp). Use when you need Microsoft/Azure/.NET/M365 docs, API references, or official code samples — semantic search, full-page fetch, or code-sample lookup by language."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/my-agents",
+      "name": "my-agents",
+      "description": "YAML定義のLangchainエージェントを実行・一覧表示・新規作成する `my-agents` CLIの使い方を説明する。カスタムエージェントにプロンプトを投げて答えさせたい、既存のエージェント設定YAMLを確認したい、使えるツールを確認した上で新しいエージェント設定YAMLを作りたい場合に使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/ona-run",
+      "name": "ona-run",
+      "description": "リポジトリURL（またはOnaプロジェクトID）とタスク内容を指定してOnaの環境（コンテナ）を作成・起動し、その中でAIエージェントCLI等のタスクを実行して完了後に停止する`ona-run` CLIツールの使い方を説明する。`--agent`/`--command`の選び方、`--cleanup`モードの選び方、終了コード・stderrマーカーの意味を判断したい場合に使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/skill-tools-cli",
+      "name": "skill-tools-cli",
+      "description": "ai-tools.yamlに登録済みのAgent Skillを一覧・他プロジェクトへ配置・本文ハイブリッド検索し、目的別workflowを確認し、repo-hooks.yamlのエージェントフックを配置・登録する`skill-tools` CLIの使い方を説明する。手元のプロジェクトへスキルやフックを導入したい、配布対象やworkflowを確認したい、自然文や本文語彙でスキルを検索したい、source（local clone / GitHub）やindexの解決結果を確認したい場合に使う。スキルの新規作成・SKILL.mdの編集自体は対象外。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/tav-cli",
+      "name": "tav-cli",
+      "description": "Guides multi-step Tavily research with this project's `tav` command, including web-wide search, multiple URLs, site maps/crawls, and topic-based result accumulation. Use when a task needs more than one known URL or a reusable research workspace; use `tav-lit` to extract one already-known URL."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/tav-digest",
+      "name": "tav-digest",
+      "description": "tav`で`--topic`指定して収集した`pages/`(extract/crawl/search-extract/map-extractの取得本文)のうち、自分で1件ずつ読む代わりに`aim --parallel`で並列にAI抽出させたいものをまとめて処理し、関連する内容だけを報告させるCLI連携スキル。(a) `pages/index.json`のエントリ数が多くタイトルだけでは関連性を判断しづらい場合(目安5件以上)に全件を渡して関連するものだけ絞り込ませたいとき、(b) `index.json`から読みたいファイルを選んだ後、その中に`char_count`が大きいファイルが複数あり個別Readせずまとめて抽出させたいとき、のいずれかで使う。1ファイルだけを抽出したい場合は`aim-cli`を直接使えばよい。discovery(`search/`・`map/`)やreport(`research/`)はこのスキルの対象外(集約1ファイル、または成功時のみの単一レポートなのでそのまま読めば足りる)。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/tav-lib",
+      "name": "tav-lib",
+      "description": "`tools/tav-cli` のグローバルインストール済み Python 実装をライブラリとして使い、Tavily 経由で Web 検索・URL 本文抽出・サイトマップ・クロール・リサーチを行う方法を説明する。Python コードから Tavily API を呼び出したい、`--detail` プリセットを適用した結果を取り出したい場合に使う。CLI コマンドを実行する場合は `tav-cli` を使う。"
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/tav-lit",
+      "name": "tav-lit",
+      "description": "Fetch the raw text/markdown content of a single already-known URL via Tavily extract, or pull just the query-relevant chunks from that one page. Use when exactly one URL is already known and only its text (or a keyword-focused excerpt of it) is needed, via one minimal command. Results are always written to a Markdown file (never printed in full to the terminal) so large pages don't blow up context; only the file path is printed. Do not use for multiple/batch URLs, site maps or crawls, web-wide keyword search when the URL is unknown, or work whose results need to accumulate across many pages/tasks — that belongs to the `tav-cli` skill."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/textgraph",
+      "name": "textgraph",
+      "description": "Explains when to use the `textgraph` CLI for local file-link graphs in text files. Use when deciding among status, impact, and check, when editing Markdown or SKILL.md and needing inbound references, when choosing whether `fix --apply` is safe, when choosing `check --scripts` for script-comment links, or when falling back to grep for YAML or imports."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/use-context",
+      "name": "use-context",
+      "description": "Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure and `aws-docs` for AWS official documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls."
+    }
+  ],
+  "claude-plugins/my-tools-no-install": [
+    {
+      "path": "claude-plugins/my-tools-no-install/skills/web-lookup",
+      "name": "web-lookup",
+      "description": "Looks up current web information via a bundled CLI covering grep.app (real GitHub code), Microsoft Learn (official Microsoft/Azure docs), Tavily (general web), and Context7 (library APIs). Use when you need Microsoft/Azure official docs, current library/framework API references, real-world public GitHub code examples, or general web research, and the plugin must run without installing tools/ CLIs."
+    }
+  ],
+  "claude-plugins/no-code": [
+    {
+      "path": "claude-plugins/no-code/skills/french",
+      "name": "french",
+      "description": "Skill to help user learn French."
+    }
+  ],
+  "claude-plugins/others": [
+    {
+      "path": "claude-plugins/others/skills/github-fetch",
+      "name": "github-fetch",
+      "description": "Pull only a specific subset of files from a GitHub repository into the local filesystem, without cloning the whole repo. Narrows scope step by step via the GitHub REST API (README, then progressively deeper folder listings) before downloading anything. Use when the user wants \"just this folder/file from some GitHub repo\", wants to inspect an unfamiliar repo's structure before deciding what to pull, or explicitly says not to `git clone` the whole thing."
+    },
+    {
+      "path": "claude-plugins/others/skills/vscode-docs",
+      "name": "vscode-docs",
+      "description": "Use when answering questions about Visual Studio Code (the editor) features, settings, keybindings, extensions, tasks, debugging, source control, Copilot Chat/Agent mode in VS Code, etc. Grounds answers in the latest official docs (code.visualstudio.com) instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/others/skills/zenn",
+      "name": "zenn",
+      "description": "ZENN記事を、事前調査→概要提案→ユーザー承認→調査→plan→承認→publish の順で進めるスキル"
+    },
+    {
+      "path": "claude-plugins/others/skills/zenn-refine",
+      "name": "zenn-refine",
+      "description": "既存ZENN記事を改善するスキル"
+    }
+  ],
+  "claude-plugins/special": [
+    {
+      "path": "claude-plugins/special/skills/command-group",
+      "name": "command-group",
+      "description": "指定したサブスキルの内容をまとめて読み込んで提供するユーザー呼び出し専用スキル"
+    },
+    {
+      "path": "claude-plugins/special/skills/skill-group",
+      "name": "skill-group",
+      "description": "様々なスキルをグループ化したスキル"
+    }
+  ],
+  "claude-plugins/subagents": [
+    {
+      "path": "claude-plugins/subagents/skills/dispatching-parallel-agents",
+      "name": "dispatching-parallel-agents",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies"
+    },
+    {
+      "path": "claude-plugins/subagents/skills/subagent-driven-development",
+      "name": "subagent-driven-development",
+      "description": "Use when executing implementation plans with independent tasks in the current session"
+    },
+    {
+      "path": "claude-plugins/subagents/skills/test-driven-development",
+      "name": "test-driven-development",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code"
+    }
+  ],
+  "claude-plugins/topics": [
+    {
+      "path": "claude-plugins/topics/skills/ai-sdk-docs",
+      "name": "ai-sdk-docs",
+      "description": "Use when answering questions about the Vercel AI SDK (the `ai` package, `@ai-sdk/*` providers, AI SDK Core/UI) — generateText/streamText, generateObject/streamObject, tools, ToolLoopAgent, useChat/useCompletion/useObject, embeddings, image/speech/transcription, providers, AI Gateway, or React/Next.js/Vue/Svelte/Node integrations. Grounds answers in the latest official docs (ai-sdk.dev) instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/apify-docs",
+      "name": "apify-docs",
+      "description": "Use when answering questions about Apify (apify.com / docs.apify.com) — Actors (serverless scraping/automation programs), Apify Store and finding an Actor for a task, running Actors via the REST API v2 / `apify-client` (JS/Python) / Apify MCP server, building Actors with the Apify SDK (JS/Python) and Apify CLI (actor.json, input/output/dataset schemas, Standby mode, deployment), storage (datasets, key-value stores, request queues), proxy, schedules/tasks/webhooks, pricing and Actor monetization (pay-per-event, pay-per-result, rental), limits, and integrations (Claude Code, Cursor, LangChain, n8n, Make, Zapier, etc.). Grounds answers in the latest official docs and Store data instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/ccusage-docs",
+      "name": "ccusage-docs",
+      "description": "Use when answering questions about ccusage (ccusage.com) — the local CLI that reads coding-agent usage files and reports token usage and estimated costs across Claude Code, Codex, OpenCode, Amp, Droid, Codebuff, Hermes Agent, pi-agent, Goose, OpenClaw, Kilo, Kimi, Qwen, GitHub Copilot CLI, Gemini CLI, Antigravity, Grok Build CLI, and ZCode. Covers installation, data-source locations, config files, environment variables, cost modes, daily/weekly/monthly/session/blocks reports, JSON output, statusline, per-source setup, and raw `ccusage` CLI invocations (flags, subcommands, `ccusage claude daily` / `ccusage grok session`, date filters). Grounds answers in the latest official docs from ccusage.com and the CLI's own `--help` output instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/codegraph-docs",
+      "name": "codegraph-docs",
+      "description": "Use when exploring a codebase with CodeGraph (colbymchenry/codegraph) via MCP codegraph_explore or CLI `codegraph explore` — symbols, callers, callees, impact, or how code flows — before falling back to grep/Read, or when answering questions about CodeGraph itself (install, MCP, CLI flags and subcommands such as --max-files / --json / serve --mcp, indexing, languages, agent integrations). Grounds product answers in the local official-docs snapshot from colbymchenry/codegraph site/src/content/docs, and CLI interface answers in the bundled `codegraph --help` YAML."
+    },
+    {
+      "path": "claude-plugins/topics/skills/deepseek-harness-docs",
+      "name": "deepseek-harness-docs",
+      "description": "Use when answering questions about DeepSeek Harness (`dsh`) - its Web UI, CLI profiles, Python SDK, model providers, permissions, sessions, plugins, Cordis APIs, tools, or architecture. Grounds answers in the current English-only official documentation at deepseek-harness.github.io instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/langchain-docs",
+      "name": "langchain-docs",
+      "description": "Use when answering questions about LangChain, LangGraph, LangSmith, or langchain-ai's Python/JavaScript SDKs and integration packages (chat models, agents, tools, retrieval/RAG, checkpointers, MCP adapters, etc.) — API signatures, parameters, return types, which package/class to use, or deprecated-vs-current patterns (e.g. LLMChain/AgentExecutor vs create_agent). Grounds answers in the latest official API reference (reference.langchain.com) instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/litellm-docs",
+      "name": "litellm-docs",
+      "description": "Use when answering questions about LiteLLM SDK or LiteLLM Proxy/Gateway documentation — routing and load balancing, providers and model configuration, authentication, budgets, guardrails, observability, pass-through endpoints, or API usage. Grounds answers in current official pages under docs.litellm.ai/docs instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/ona-cli-docs",
+      "name": "ona-cli-docs",
+      "description": "Use when constructing or explaining raw Ona official CLI (`ona` command) invocations -- e.g. `ona-run`'s `--command` needs a hand-built `ona environment exec`/`ona environment ssh` line, or a question is about `ona login`/personal access tokens, environment/automation subcommands, or CLI configuration. Grounds answers in a curated excerpt of ona.com's official docs (via the ona-docs skill's cached llms.txt) instead of training-data memory, which may be stale or reference the pre-rename \"Gitpod\" CLI."
+    },
+    {
+      "path": "claude-plugins/topics/skills/ona-docs",
+      "name": "ona-docs",
+      "description": "Use when answering questions about Ona (ona.com, formerly Gitpod) — the platform for background agents (autonomous AI software engineers that plan, code, test, and open PRs in isolated cloud environments), Automations (trigger-based workflows), Ona environments/Dev Containers, Veto (kernel-level agent security), multi-SCM support (GitHub/GitLab/Bitbucket/Azure DevOps), IDE integrations, the REST API, or company info (leadership, customers, pricing, comparisons to other coding-agent platforms). Grounds answers in the latest official content from ona.com and ona.com/docs instead of training-data memory, which may be stale or still reference \"Gitpod\"."
+    },
+    {
+      "path": "claude-plugins/topics/skills/openrouter-docs",
+      "name": "openrouter-docs",
+      "description": "Use when answering questions about OpenRouter (openrouter.ai) — the unified API for routing requests across many LLM providers/models, its Agent SDK, Client SDKs (TypeScript/Python/Go), REST API reference, model routing/variants (:nitro, :online, :thinking, etc.), plugins, guardrails, presets, workspaces, pricing/BYOK, or integrating OpenRouter with coding agents (Claude Code, Cursor, Codex CLI, etc.). Grounds answers in the latest official docs (openrouter.ai/docs) instead of training-data memory, which may be stale."
+    },
+    {
+      "path": "claude-plugins/topics/skills/vercel-docs",
+      "name": "vercel-docs",
+      "description": "Use when answering questions about Vercel — deployments, builds, Vercel Functions and Fluid compute, runtimes, Routing Middleware, CDN/caching/ISR, environment variables, domains/DNS, the Vercel CLI, the Vercel REST API/SDK, AI Gateway, Sandbox, storage (Blob/KV/Edge Config/Postgres), observability, firewall/WAF, and other products documented on vercel.com/docs. Grounds answers in the latest official Vercel documentation instead of training-data memory, which may be stale or predate product changes, aliases, and deprecations."
+    },
+    {
+      "path": "claude-plugins/topics/skills/writing-mermaid-diagrams",
+      "name": "writing-mermaid-diagrams",
+      "description": "Use when writing or editing Mermaid diagrams (flowchart, sequence, class, state, ER, etc.) in Markdown files, SKILL.md docs, PR descriptions, or Claude Artifacts. Covers two failure modes that plain Mermaid knowledge misses — diagrams that render differently (or break) across VS Code preview / Mermaid Live Editor / GitHub / Claude Artifacts, and diagrams that are technically valid but hard to read (crossing edges, unlabeled arrows, oversized graphs) or hard to maintain (unstable node IDs, no comments)."
+    }
+  ]
+}

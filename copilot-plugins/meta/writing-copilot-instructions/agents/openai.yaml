@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing Copilot Instructions"
+  short_description: "Design, write, and validate GitHub Copilot instruction files"
+  default_prompt: "Design or review GitHub Copilot instruction files after identifying the target host and scope."

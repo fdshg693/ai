@@ -1,0 +1,17 @@
+{
+  "name": "ai-tools-doc-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate-tool-pages.mjs",
+    "dev": "pnpm run generate && vitepress dev docs",
+    "build": "pnpm run generate && vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}

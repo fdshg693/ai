@@ -1,0 +1,23 @@
+# skill-tools config used only to self-install this repository's hooks.
+#
+# Do not rename this to a root-level skill-tools.yaml: a CWD skill-tools.yaml is
+# merged into every skill-tools command run from the repo root and would switch
+# their default source/index. The root justfile passes this file explicitly
+# (`just hooks-install` / `just hooks-update`), and an explicit --config is not
+# merged with the user's global config.
+#
+# Relative paths are resolved against this file's directory.
+source:
+  type: local
+  path: ..
+
+hooks:
+  default_agents: [claude]
+  agents:
+    claude:
+      destination: .claude/hooks
+      settings_file: project
+    codex:
+      destination: .codex/hooks
+    kilo:
+      destination: .kilo/plugin

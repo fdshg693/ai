@@ -1,0 +1,13 @@
+# Entry point for distributable agent hooks (read by `skill-tools hooks ...`).
+#
+# This file only says where the hook catalog lives. Do not list hooks here:
+# each hook is defined by agent-tooling/agent_tooling/hooks/scenarios/<id>/hook.yaml,
+# and agent-tooling's builder aggregates them into the generated catalog below
+# (`just --justfile agent-tooling/justfile generate`). The catalog and every
+# file it references are committed build outputs under generated/, so a
+# GitHub source can list hooks by fetching this file and the catalog only.
+#
+# `catalog` is relative to this file. Paths inside the catalog are relative to
+# the catalog's own directory.
+version: 1
+catalog: agent-tooling/agent_tooling/hooks/generated/catalog.json

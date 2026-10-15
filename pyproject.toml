@@ -1,0 +1,66 @@
+# Virtual workspace root (no [project] table): this repo isn't itself a
+# distributable package, it just groups the Python packages scattered under
+# tools/ and claude-plugins/*/skills/ so uv can manage them together.
+#
+# (A) CLI as a global command (replaces `pip install -e <path>`):
+#     uv tool install --editable <path-to-package>
+# (B) Shared dev venv for running tests across all member packages:
+#     uv sync && uv run pytest
+[tool.uv.workspace]
+members = [
+    "tools/aim",
+    "tools/aim-use/aim-summarize",
+    "tools/claude-wrapper",
+    "tools/cursor-wrapper",
+    "tools/interactive-cli-wrapper",
+    "tools/sandbox/orchestrator",
+    "tools/issue-agent",
+    "tools/my-agents",
+    "tools/tav-cli",
+    "tools/mslearn",
+    "tools/awsdocs",
+    "tools/ctx7",
+    "tools/pyinspect",
+    "tools/grepapp",
+    "tools/internal/ai-usage",
+    "tools/schedule",
+    "tools/ona-run",
+    "tools/openrouter/model-select",
+    "tools/openrouter/model-list",
+    "claude-plugins/meta/skills/writing-skill-web",
+    "tools/skill-tools",
+    "tools/textgraph",
+    "tools/vscode-profiles",
+    "tools/agents-rules",
+    "agent-tooling",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.14.0",
+]
+
+[tool.pytest.ini_options]
+# Workspace members each keep their own tests/ directory without __init__.py,
+# so identically-named test modules (e.g. tests/test_config.py) collide under
+# the default "prepend" import mode via a shared sys.modules namespace.
+# importlib mode keys modules by full path instead, avoiding the collision
+# without renaming files or restructuring packages.
+addopts = "--import-mode=importlib"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+# Loose ruleset for now: this is primarily used as a formatter
+# (`ruff format`). Lint is limited to pyflakes + a few pycodestyle error
+# checks that never disagree with the formatter.
+select = ["E4", "E7", "E9", "F"]
+ignore = [
+    "E402", # several scripts intentionally import after a `sys.path` tweak
+]
+
+[tool.ruff.format]
+quote-style = "double"

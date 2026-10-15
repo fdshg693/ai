@@ -1,0 +1,83 @@
+{
+  "name": "seiwan-marketplace",
+  "owner": {
+    "name": "Seiwan Maikuma",
+    "email": "xingwanmeixiong@gmail.com"
+  },
+  "metadata": {
+    "description": "Skills, workflows, and productivity tools",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "cicd",
+      "source": "./claude-plugins/cicd",
+      "description": "CICD plugins for Claude",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "coding",
+      "source": "./claude-plugins/coding",
+      "description": "Coding plugins for Claude",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "meta",
+      "source": "./claude-plugins/meta",
+      "description": "Meta skills for developing and maintaining Claude Code itself",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "my-tools",
+      "source": "./claude-plugins/my-tools",
+      "description": "Skill to use custom tools made by me",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "my-tools-no-install",
+      "source": "./claude-plugins/my-tools-no-install",
+      "description": "Skill to use custom tools (but no installation) made by me",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "no-code",
+      "source": "./claude-plugins/no-code",
+      "description": "Skill to use Claude Code for non coding tasks for whatever fancy reason you want to use it for.",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "others",
+      "source": "./claude-plugins/others",
+      "description": "other plugins for Claude",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "special",
+      "source": "./claude-plugins/special",
+      "description": "Unordinary skills. Only for Claude Code power users.",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "subagents",
+      "source": "./claude-plugins/subagents",
+      "description": "Claude Code skill for using subagents",
+      "version": "0.1.0",
+      "strict": true
+    },
+    {
+      "name": "topics",
+      "source": "./claude-plugins/topics",
+      "description": "Focused Skill for specific topics, providing targeted information and insights.",
+      "version": "0.1.0",
+      "strict": true
+    }
+  ]
+}

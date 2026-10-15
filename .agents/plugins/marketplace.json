@@ -1,0 +1,20 @@
+{
+  "name": "seiwan-codex-marketplace",
+  "interface": {
+    "displayName": "Seiwan Codex Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "meta",
+      "source": {
+        "source": "local",
+        "path": "./codex-plugins/meta"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+# Read-only purpose catalog. References are repo-relative canonical SKILL.md IDs
+# and repo-tools.yaml keys; this file does not install or execute anything.
+version: 1
+workflows:
+  - id: microsoft-official-research
+    title: Microsoft official documentation research
+    purpose: Find and verify Microsoft/Azure documentation, then optionally synthesize multiple sources.
+    steps:
+      - id: find-official-sources
+        skill: claude-plugins/my-tools/skills/ms-learn/SKILL.md
+        handoff: Read selected result files or fetch the relevant official page.
+      - id: synthesize-many-sources
+        skill: claude-plugins/my-tools/skills/ms-digest/SKILL.md
+        optional: true
+        choice: result-processing
+        when: Several result files need relevance filtering or parallel extraction.
+        handoff: Summarize only relevant findings and retain source URLs.
+      - id: extract-one-source
+        skill: claude-plugins/my-tools/skills/aim-cli/SKILL.md
+        optional: true
+        choice: result-processing
+        when: One selected result file is too large to read directly.
+        handoff: Verify extracted claims against the Microsoft Learn source.
+
+  - id: multi-source-web-research
+    title: Multi-source web research and synthesis
+    purpose: Search or collect multiple web sources, then optionally extract relevant findings in parallel.
+    steps:
+      - id: collect-web-sources
+        skill: claude-plugins/my-tools/skills/tav-cli/SKILL.md
+        handoff: Inspect the collected result index and select source pages.
+      - id: synthesize-many-sources
+        skill: claude-plugins/my-tools/skills/tav-digest/SKILL.md
+        optional: true
+        choice: result-processing
+        when: Several source pages need relevance filtering or parallel extraction.
+        handoff: Report relevant findings with source URLs from the page index.
+      - id: extract-one-source
+        skill: claude-plugins/my-tools/skills/aim-cli/SKILL.md
+        optional: true
+        choice: result-processing
+        when: One selected source page is too large to read directly.
+        handoff: Verify extracted claims against the original source page.

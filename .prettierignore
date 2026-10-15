@@ -1,0 +1,15 @@
+# Python virtual environments and caches
+**/.venv/
+**/venv/
+**/__pycache__/
+**/_pycache__/
+**/_py_cache/
+**/.mypy_cache/
+**/.pytest_cache/
+
+# Node.js dependencies
+**/node_modules/
+**/node_moudules/
+
+# tools\internal\generate_skills_catalog_md.py の生成物
+**/CATALOG.md

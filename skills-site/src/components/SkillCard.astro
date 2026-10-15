@@ -1,0 +1,18 @@
+---
+import StatusBadge from "./StatusBadge.astro";
+import { skillHref } from "../lib/catalog.js";
+
+const { skill } = Astro.props;
+---
+<article class="skill-card" data-skill-card data-path={skill.path} data-tool={skill.tool} data-plugin={skill.plugin} data-status={skill.status.key} data-name={skill.name.toLowerCase()}>
+  <div class="skill-card-topline">
+    <span class="eyebrow">{skill.tool} <span aria-hidden="true">/</span> {skill.plugin}</span>
+    <StatusBadge status={skill.status} />
+  </div>
+  <h2><a href={skillHref(skill.path)}>{skill.name}</a></h2>
+  <p class="skill-description">{skill.description}</p>
+  <div class="skill-card-footer">
+    <code>{skill.path}</code>
+    <a class="text-link" href={skillHref(skill.path)} aria-label={`${skill.name}の詳細を見る`}>詳細を見る<span aria-hidden="true"> →</span></a>
+  </div>
+</article>

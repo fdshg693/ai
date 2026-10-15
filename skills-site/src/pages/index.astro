@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AISuggest from "../components/AISuggest.astro";
+import SkillCard from "../components/SkillCard.astro";
+import SkillFilter from "../components/SkillFilter.astro";
+import RepoToolsList from "../components/RepoToolsList.astro";
+import { skills, sortedUnique } from "../lib/catalog.js";
+import { STATUS_ORDER, statusFilterLabel } from "../lib/status.js";
+
+const tools = sortedUnique(skills.map((skill) => skill.tool));
+const plugins = sortedUnique(skills.map((skill) => skill.plugin));
+const statuses = STATUS_ORDER.filter((key) => skills.some((skill) => skill.status.key === key)).map(
+  (key) => ({ key, label: statusFilterLabel(key) }),
+);
+
+const pluginToolMap = {};
+for (const skill of skills) {
+  const entry = (pluginToolMap[skill.plugin] ??= new Set());
+  entry.add(skill.tool);
+}
+for (const plugin of Object.keys(pluginToolMap)) {
+  pluginToolMap[plugin] = sortedUnique([...pluginToolMap[plugin]]);
+}
+---
+<BaseLayout title="AIスキル公開カタログ">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">AI CODING SKILLS / PUBLIC CATALOG</p>
+        <h1>AIコーディングを、<span>もっと使いやすく。</span></h1>
+        <p class="hero-lead">複数のAIコーディングツール向けに作られたスキルを、ツールとプラグインをまたいで探せます。</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#skill-list">スキル一覧を見る <span aria-hidden="true">↓</span></a>
+          <a class="button button-secondary" href="https://github.com/fdshg693/AI" rel="noreferrer">GitHubで見る</a>
+        </div>
+      </div>
+      <div class="hero-stat" aria-label={`${skills.length}件のスキルを収録`}>
+        <span class="hero-stat-label">収録スキル</span><strong>{skills.length}</strong><span>skills and growing</span>
+      </div>
+    </div>
+  </section>
+  <section class="container catalog-section" aria-labelledby="catalog-heading">
+    <div class="section-heading">
+      <div><p class="eyebrow">CATALOG</p><h2 id="catalog-heading">公開されているスキル</h2></div>
+      <p class="section-note">SKILL.mdと同梱ファイルを確認できます</p>
+    </div>
+    <AISuggest />
+    <SkillFilter tools={tools} plugins={plugins} pluginToolMap={pluginToolMap} statuses={statuses} count={skills.length} />
+    <div class="skill-grid" id="skill-list">
+      {skills.map((skill) => <SkillCard skill={skill} />)}
+    </div>
+    <p class="empty-state" data-filter-empty hidden>条件に一致するスキルはありません。</p>
+  </section>
+  <section class="container catalog-section" aria-labelledby="repo-tools-heading">
+    <div class="section-heading">
+      <div><p class="eyebrow">TOOLS</p><h2 id="repo-tools-heading">インストール可能なツール</h2></div>
+      <p class="section-note">一部のスキルが前提とするCLIツールです（インストール方法は各ツールのGitHubフォルダを参照）</p>
+    </div>
+    <RepoToolsList />
+  </section>
+</BaseLayout>

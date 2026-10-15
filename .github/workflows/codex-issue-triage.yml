@@ -1,0 +1,67 @@
+# Codex を利用したGithub Action
+# 公式ドキュメント
+# - https://learn.chatgpt.com/docs/github-action
+# 参考にしたサンプル
+# - https://github.com/anthropics/claude-code-action/blob/main/examples/issue-triage.yml
+# openai/codex-action にはメンション検知のトリガー機能が無いため、
+# `@codex` メンションの検知は if 条件で自前判定している
+# Issue 本文、または Issue へのコメントで `@codex` とメンションすることで動作する
+name: Codex issue reply
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  codex:
+    runs-on: ubuntu-latest
+    # リポジトリのOWNER/COLLABORATORによるissue/コメントのみ起動する（誰でも
+    # 書ける本文で無制限にAPI課金・プロンプトインジェクションを許さないための制限）
+    if: >-
+      (github.event_name == 'issues' && contains(fromJSON('["OWNER", "COLLABORATOR"]'), github.event.issue.author_association) && contains(github.event.issue.body, '@codex')) ||
+      (github.event_name == 'issue_comment' && !github.event.issue.pull_request && contains(fromJSON('["OWNER", "COLLABORATOR"]'), github.event.comment.author_association) && contains(github.event.comment.body, '@codex'))
+    permissions:
+      contents: read
+    outputs:
+      final_message: ${{ steps.run_codex.outputs.final-message }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Codex
+        id: run_codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt: |
+            This is issue #${{ github.event.issue.number }} for ${{ github.repository }}.
+
+            Issue title and body:
+            ----
+            ${{ github.event.issue.title }}
+            ${{ github.event.issue.body }}
+          output-file: codex-output.md
+
+  post_feedback:
+    runs-on: ubuntu-latest
+    needs: codex
+    if: needs.codex.outputs.final_message != ''
+    permissions:
+      issues: write
+    steps:
+      - name: Post Codex feedback
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body: process.env.CODEX_FINAL_MESSAGE,
+            });
+        env:
+          CODEX_FINAL_MESSAGE: ${{ needs.codex.outputs.final_message }}

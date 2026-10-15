@@ -1,0 +1,49 @@
+{
+    // スキル
+    // Gitub Copilot は自動で様々な箇所のスキルを読み込むため、必要最低限に絞ることでコンテキスト節約を図る
+    // 以下では、 `.github/skills` のみを有効化している
+    "chat.agentSkillsLocations": {
+        ".agents/skills": false,
+        "~/.agents/skills": false,
+        "~/.copilot/skills": false,
+        "~/.claude/skills": false,
+        ".github/skills": true
+    },
+    // メモリ（インストラクション）
+    // Github Copilot は AGETNS.md `rules/` フォルダ内のルールなどにある程度対応しているが、ネストされた場合の対応・異なる拡張子の場合音対応など、完全でないことが多い
+    // 以下では、 `.github/instructions` のみを有効化している
+    "chat.useNestedAgentsMdFiles": false,
+    "chat.useClaudeMdFile": false,
+    "chat.useAgentsMdFile": false,
+    "chat.instructionsFilesLocations": {
+        "~/.copilot/instructions": false,
+        "~/.claude/rules": false,
+        ".claude/rules": false,
+        ".github/instructions": true
+    },
+    // エージェント
+    // Github Copilot は 自動で様々な箇所のエージェントを読み込むため、必要最低限に絞ることでコンテキスト節約を図る
+    // 以下では、 `.github/agents` のみを有効化している
+    "chat.agentFilesLocations": {
+        ".github/agents": true,
+        "~/.copilot/agents": false,
+        ".claude/agents": false
+    },
+    // Pylance対応
+    // uv workspace内のeditable installはPEP 660のfinder方式で解決されるため、
+    // 静的解析のPylanceはワークスペース内メンバー間の相互importを自動解決できない
+    // （interpreterを正しく設定していても reportMissingImports になる）。
+    // 他メンバーから import されるメンバーのルートを明示的に列挙する。
+    "python.analysis.extraPaths": [
+        "tools/aim", // aim-summarize が aim_cli を import
+        "tools/mslearn", // my-agents が mslearn-cli を import
+        "tools/tav-cli" // my-agents が tav-cli を import
+    ],
+    "claudeCode.environmentVariables": [
+  { "name": "CLAUDE_CODE_ENABLE_TELEMETRY", "value": "1" },
+  { "name": "OTEL_LOGS_EXPORTER", "value": "otlp" },
+  { "name": "OTEL_EXPORTER_OTLP_PROTOCOL", "value": "grpc" },
+  { "name": "OTEL_EXPORTER_OTLP_ENDPOINT", "value": "http://<VMのIP>:4317" },
+  { "name": "OTEL_EXPORTER_OTLP_HEADERS", "value": "Authorization=Bearer <OTLP_AUTH_TOKEN>" }
+]
+}

@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import FileTree from "../../components/FileTree.astro";
+import StatusBadge from "../../components/StatusBadge.astro";
+import MetaFieldPanel from "../../components/MetaFieldPanel.astro";
+import { downloadHref, metaFieldDefault, sitePath, skillRoutePath, skills } from "../../lib/catalog.js";
+import { renderMarkdown } from "../../lib/markdown.js";
+
+export function getStaticPaths() {
+  return skills.map((skill) => ({ params: { path: skillRoutePath(skill.path) }, props: { skill } }));
+}
+
+const { skill } = Astro.props;
+const bodyHtml = renderMarkdown(skill.body);
+// meta.description defaults to "no description" for most skills (Step1);
+// only render it as a human-facing highlight when it carries real content.
+const hasHumanDescription = skill.meta.description !== metaFieldDefault("description");
+---
+<BaseLayout title={skill.name} description={skill.description}>
+  <div class="container detail-page">
+    <nav class="breadcrumbs" aria-label="パンくずリスト">
+      <a href={sitePath()}>一覧</a><span aria-hidden="true">/</span><span>{skill.tool}</span><span aria-hidden="true">/</span><span>{skill.name}</span>
+    </nav>
+    <header class="detail-header">
+      <div class="detail-heading">
+        <div class="skill-card-topline">
+          <span class="eyebrow">{skill.tool} <span aria-hidden="true">/</span> {skill.plugin}</span>
+          <StatusBadge status={skill.status} />
+        </div>
+        <h1>{skill.name}</h1>
+        <p class="detail-description-label">スキルの説明（起動判定用）</p>
+        <p class="detail-description">{skill.description}</p>
+        {hasHumanDescription && (
+          <div class="detail-human-description">
+            <p class="detail-description-label">人間向け解説</p>
+            <p class="detail-description-human">{skill.meta.description}</p>
+          </div>
+        )}
+      </div>
+      <a class="button button-primary download-button" href={downloadHref(skill.download)} download>ZIPをダウンロード <span aria-hidden="true">↓</span></a>
+    </header>
+    <div class="detail-grid">
+      <article class="markdown-body" aria-labelledby="content-heading">
+        <h2 id="content-heading" class="visually-hidden">スキル本文</h2>
+        <div set:html={bodyHtml} />
+      </article>
+      <aside class="detail-sidebar">
+        <section class="info-panel">
+          <h2>メタデータ</h2>
+          <dl class="metadata-list">
+            <div><dt>AIツール</dt><dd>{skill.tool}</dd></div>
+            <div><dt>プラグイン</dt><dd>{skill.plugin}</dd></div>
+            <div><dt>スキル名</dt><dd>{skill.frontmatter.name}</dd></div>
+            <div><dt>ステータス</dt><dd><StatusBadge status={skill.status} /></dd></div>
+            <div><dt>バージョン</dt><dd>{skill.meta.version}</dd></div>
+          </dl>
+        </section>
+        <section class="info-panel">
+          <h2>リポジトリ上のパス</h2>
+          <code class="repository-path">{skill.path}</code>
+        </section>
+        <section class="info-panel">
+          <h2>依存関係・詳細メタデータ</h2>
+          <MetaFieldPanel skill={skill} />
+        </section>
+        <section class="info-panel">
+          <div class="panel-heading"><h2>ZIPに含まれるファイル</h2><span>{skill.files.length}件</span></div>
+          <FileTree files={skill.files} />
+        </section>
+      </aside>
+    </div>
+    <a class="back-link" href={sitePath()}>← 一覧へ戻る</a>
+  </div>
+</BaseLayout>

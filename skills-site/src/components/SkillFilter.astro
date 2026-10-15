@@ -1,0 +1,14 @@
+---
+import SkillFilterReact from "./react/SkillFilter";
+
+const { tools, plugins, pluginToolMap, statuses, count } = Astro.props;
+---
+<SkillFilterReact
+  client:idle
+  tools={tools}
+  plugins={plugins}
+  pluginToolMap={pluginToolMap}
+  statuses={statuses}
+  count={count}
+  searchApiHref="/api/search"
+/>

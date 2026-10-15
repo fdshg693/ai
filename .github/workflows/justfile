@@ -1,0 +1,18 @@
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
+
+# List available recipes
+default:
+    @just --list
+
+# Compile every gh-aw workflow Markdown file (*.md) in this directory into *.lock.yml
+# https://github.github.com/gh-aw/reference/cli/#compile
+compile:
+    gh aw compile --strict
+
+# Compile a single workflow by id or filename (e.g. `just compile-one gaw-issue-triage`)
+compile-one id:
+    gh aw compile {{ id }} --strict
+
+# Watch this directory and recompile automatically on changes
+watch:
+    gh aw compile --strict --watch

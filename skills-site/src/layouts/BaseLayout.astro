@@ -1,0 +1,49 @@
+---
+import "../styles/global.css";
+import { sitePath } from "../lib/catalog.js";
+import buildInfo from "../../public/build-info.json";
+
+const { title, description = "AIコーディングツール向けスキルの公開カタログ" } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" href={sitePath("favicon.svg")} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <title>{title ? `${title} | スキルカタログ` : "スキルカタログ"}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href={sitePath()} aria-label="スキルカタログのトップへ">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>スキルカタログ</span>
+        </a>
+        <nav aria-label="メインナビゲーション">
+          <a href={sitePath()}>一覧</a>
+          <a href="https://github.com/fdshg693/AI" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>AIコーディングツールのスキルを横断検索できる公開カタログ</span>
+        <a href="https://github.com/fdshg693/AI" rel="noreferrer">ソースリポジトリ</a>
+        <span class="build-info" title={`commit ${buildInfo.commit} (${buildInfo.ref})`}>
+          {buildInfo.workflowRunUrl ? (
+            <a href={buildInfo.workflowRunUrl} rel="noreferrer">build {buildInfo.shortCommit}</a>
+          ) : (
+            <span>build {buildInfo.shortCommit}</span>
+          )}
+          {" · "}{buildInfo.builtAt}
+        </span>
+      </div>
+    </footer>
+  </body>
+</html>
+

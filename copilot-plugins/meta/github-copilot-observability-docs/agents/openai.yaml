@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Copilot Observability Docs"
+  short_description: "Research Copilot logs, metrics, and OpenTelemetry"
+  default_prompt: "Use $github-copilot-observability-docs to investigate GitHub Copilot logs, metrics, audit events, or OpenTelemetry."

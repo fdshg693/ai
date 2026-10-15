@@ -1,0 +1,17 @@
+---
+// Lists the CLI tools skills.md meta.requires_repo_tools/requires_install
+// declare as prerequisites (repo-tools.yaml is the SSOT). Name + GitHub
+// folder link only — install instructions are deliberately out of scope
+// here (see each tool's own README/skill for that).
+import { repoTools } from "../lib/catalog.js";
+---
+<ul class="meta-field-value-list repo-tools-list">
+  {repoTools.map((tool) => (
+    <li>
+      <a class="meta-field-link meta-field-link--external" href={tool.githubUrl} target="_blank" rel="noreferrer">
+        {tool.name}<span class="meta-field-link-icon" aria-hidden="true"> ↗</span>
+        <span class="visually-hidden">（外部サイト、新しいタブで開く）</span>
+      </a>
+    </li>
+  ))}
+</ul>

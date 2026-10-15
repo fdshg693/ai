@@ -1,0 +1,12 @@
+plugin/
+
+worktrees/
+
+agent-manager.json
+
+node_modules
+package.json
+package-lock.json
+pnpm-lock.yaml
+bun.lock
+yarn.lock

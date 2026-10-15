@@ -1,0 +1,54 @@
+# env
+*.env
+
+# 依存
+__pycache__/
+*.py[cod]
+.venv/
+
+.ruff_cache/
+.pytest_cache/
+
+node_modules/
+
+.DS_Store
+
+# メモ
+memo/
+
+# temp
+temp/
+
+
+# log
+logs/
+*.log
+
+# skill-tools のFB（`SKILL_TOOLS_FB_DIR` 既定の `tools/skill-tools/fb/`）。実行時に増えるローカルメモ
+fb/
+
+tools/sandbox/orchestrator/data/
+
+*.egg-info/
+
+*.pem
+
+# cacheやsqlite3は、実行時に生成される一時ファイルであり、バージョン管理の対象外とする
+.cache/
+*.sqlite3
+
+# CodeGraph のローカル知識グラフ（SQLite）。マシン固有で再生成できる
+.codegraph/
+
+# textgraph のローカルリンクグラフ（SQLite）。マシン固有で再生成できる
+.textgraph/
+
+# hookは共有しない（`just hooks-install` で skill-tools が配置・登録する自己インストール成果物）
+.codex/hooks.json
+.codex/hooks/
+.cursor/hooks.json
+.cursor/hooks/
+.agents/hooks.json
+.agents/hooks/
+# skill-tools のプロジェクト manifest・journal
+.skill-tools/

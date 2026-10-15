@@ -1,0 +1,11 @@
+---
+const { files } = Astro.props;
+function formatSize(size) {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+---
+<ul class="file-tree" aria-label="ZIPに含まれるファイル一覧">
+  {files.map((file) => <li><code>{file.path}</code><span>{formatSize(file.size)}</span></li>)}
+</ul>

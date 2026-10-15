@@ -1,0 +1,32 @@
+{
+  "name": "ai-skill-catalog-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "catalog:build": "node scripts/build-catalog.mjs",
+    "search-index:build": "node scripts/build-search-index.mjs",
+    "build:info": "node scripts/write-build-info.mjs",
+    "patch:csp": "node scripts/patch-csp-header.mjs",
+    "build": "pnpm run catalog:build && pnpm run build:info && astro build && pnpm run patch:csp",
+    "dev": "pnpm run catalog:build && pnpm run build:info && astro dev",
+    "preview": "astro preview",
+    "validate": "node scripts/validate-publication.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "api:install": "pnpm --filter ai-skill-catalog-api install"
+  },
+  "dependencies": {
+    "@astrojs/react": "^6.0.1",
+    "astro": "^7.1.2",
+    "js-yaml": "^4.1.0",
+    "marked": "^18.0.6",
+    "minisearch": "^7.2.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sanitize-html": "^2.17.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^29.1.1"
+  }
+}

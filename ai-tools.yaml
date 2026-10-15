@@ -1,0 +1,188 @@
+# SSOT for "which AI coding tool has which plugins, and where its marketplace /
+# skill-catalog / generated-rules files live" in this repository.
+#
+# tools/internal/plugin_meta/generate/generate_*.py must read these values
+# through tools/internal/plugin_meta/util/ai_tools_config.py instead of
+# hardcoding paths or metadata. README.md's "AIツールごとの設定・プラグインルート"
+# section is generated from the `readme` block below (see
+# tools/internal/plugin_meta/generate/generate_readme_tools_section.py).
+#
+# Each `plugins` entry describes one plugin/workspace-skill root:
+#   - path: repo-relative path to the plugin (or, for tool-root skill folders
+#     with no plugin.json/marketplace registration, the tool config dir itself)
+#   - kind: "plugin" (has its own manifest, e.g. plugin.json/.codex-plugin) or
+#     "workspace" (tool-root skills folder, no manifest, not marketplace-registered)
+#   - skills_layout: "subdir" if SKILL.md folders live under <path>/skills, or
+#     "direct" if SKILL.md folders are immediate children of <path> itself
+
+tools:
+  claude-code:
+    readme:
+      config_dirs:
+        - path: .claude
+          description: "このリポジトリ自体を Claude Code で開発するための設定（rules, workflows 等。hooks/ は skill-tools による自己インストール先）"
+      plugin_roots:
+        - path: claude-plugins
+          description: "Claude Code 用プラグイン本体"
+        - path: .claude-plugin
+          description: "上記プラグイン群をまとめるマーケットプレイス定義（`marketplace.json`）と skill カタログ（`skill-catalog.json`）"
+    plugins:
+      - path: claude-plugins/cicd
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/coding
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/meta
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/my-tools
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/my-tools-no-install
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/no-code
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/others
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/special
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/subagents
+        kind: plugin
+        skills_layout: subdir
+      - path: claude-plugins/topics
+        kind: plugin
+        skills_layout: subdir
+    marketplace:
+      output_path: .claude-plugin/marketplace.json
+      name: seiwan-marketplace
+      owner:
+        name: Seiwan Maikuma
+        email: xingwanmeixiong@gmail.com
+      metadata:
+        description: "Skills, workflows, and productivity tools"
+        version: "1.0.0"
+    skill_catalog:
+      output_path: .claude-plugin/skill-catalog.json
+
+  cline:
+    readme:
+      config_dirs:
+        - path: .cline
+          description: "Cline 用設定（rules, skills）"
+        - path: .clinerules
+          description: "Cline が読むルールファイル群（`root.md`, `tools-*.md`, `templates.md` 等）。詳細は `.clinerules/root.md` 参照"
+      plugin_roots:
+        - path: cline-plugins
+          description: "Cline 用プラグイン（主にカスタムツール系）"
+    plugins:
+      - path: .cline
+        kind: workspace
+        skills_layout: subdir
+    rules_from_agents_md:
+      output_dir: .clinerules
+
+  kilo:
+    readme:
+      config_dirs:
+        - path: .kilo
+          description: "Kilo Code（CLI/TUI/VS Code拡張）が`.kilo/skills/`から自動検出するSkill（SKILL.md形式、marketplace.json/plugin.json相当のバンドル機構はKilo自体に存在しない）"
+    plugins:
+      - path: .kilo
+        kind: workspace
+        skills_layout: subdir
+
+  codex:
+    readme:
+      plugin_roots:
+        - path: codex-plugins
+          description: "Codex 用プラグイン（`meta/` 配下に設定・スキル）"
+      config_dirs:
+        - path: .agents
+          description: "Codex が読むマーケットプレイス定義（`.agents/plugins/marketplace.json`）から `copilot-plugins/` 等のプラグインを読み込む。Antigravity ともフォルダ名が競合するため `_agents/` と使い分け（`.agents/README.md` 参照）"
+    plugins:
+      - path: codex-plugins/meta
+        kind: plugin
+        skills_layout: subdir
+    marketplace:
+      output_path: .agents/plugins/marketplace.json
+      name: seiwan-codex-marketplace
+      interface:
+        displayName: "Seiwan Codex Marketplace"
+      default_category: "Productivity"
+
+  copilot:
+    readme:
+      plugin_roots:
+        - path: copilot-plugins
+          description: "Copilot 用プラグイン（`meta/` 配下に docs/skills 群）"
+      config_dirs:
+        - path: .github
+          description: "Copilot 設定（`copilot/settings.json`）、instructions、agents/skills（プラグイン経由で読込）、および CI 用 GitHub Actions workflows"
+    plugins:
+      - path: copilot-plugins/meta
+        kind: plugin
+        skills_layout: direct
+      - path: .github
+        kind: workspace
+        skills_layout: subdir
+    marketplace:
+      plugin_json_output_path: copilot-plugins/meta/plugin.json
+      output_path: .github/plugin/marketplace.json
+      plugin:
+        name: meta
+        description: "Skills for researching and authoring GitHub Copilot, Copilot CLI, VS Code Copilot, agent skills, and agent plugins."
+        version: "1.0.0"
+        author:
+          name: fdshg693
+          url: "https://github.com/fdshg693"
+        homepage: "https://github.com/fdshg693/AI"
+        repository: "https://github.com/fdshg693/AI"
+        keywords:
+          - github-copilot
+          - copilot-cli
+          - vs-code
+          - agent-skills
+          - plugins
+      name: ai-plugins
+      metadata:
+        description: "GitHub Copilot plugins maintained in the AI research repository."
+        version: "1.0.0"
+    instructions_from_agents_md:
+      output_dir: .github/instructions
+
+  cursor:
+    readme:
+      config_dirs:
+        - path: .cursor
+          description: "Cursor が読む設定フォルダ。`.cursor/rules/` はネストした AGENTS.md と重複するため意図的に空（理由は `.cursor/rules/README.md` 参照）"
+      plugin_roots:
+        - path: cursor-plugins
+          description: "Cursor 用プラグイン（`meta/` 配下に `.cursor-plugin`, docs, skills 群）"
+    plugins:
+      - path: cursor-plugins/meta
+        kind: plugin
+        skills_layout: direct
+    rules_from_agents_md:
+      output_dir: .cursor/rules
+
+  antigravity:
+    readme:
+      plugin_roots:
+        - path: antigravity-plugins
+          description: "Antigravity 用プラグインのルート（実体は `_agents/plugins/` 配下に配置）"
+        - path: _agents
+          description: "Antigravity 用プラグイン格納場所（`_agents/plugins/`）。`.agents/` と使い分ける（`_agents/README.md` 参照）"
+      config_dirs:
+        - path: .agents/rules
+          description: "Antigravity が読むワークスペース Rules。`AGENTS.md` から `tools/agents-rules` CLI で生成する（`.agents/README.md` 参照）。手編集しない"
+    plugins:
+      - path: _agents/plugins/antigravity-meta
+        kind: plugin
+        skills_layout: subdir
+    rules_from_agents_md:
+      output_dir: .agents/rules

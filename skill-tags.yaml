@@ -1,0 +1,24 @@
+# SSOT for the values allowed in SKILL.md frontmatter's meta.tag array field.
+#
+# Documentation-only, like meta_field.yaml's `status` enum: nothing in this
+# repository validates a SKILL.md's meta.tag values against this list today.
+# It exists so the set of tags used for cross-skill topic search stays a
+# deliberately curated, bounded vocabulary instead of growing without limit
+# as skills invent ad-hoc values. Add a tag here before using it in a
+# SKILL.md's meta.tag.
+#
+# 関連ファイル
+# meta_field.yaml
+# docs/repo-wide/skill-meta-fields.md
+#
+# フォーマット（値＋意味）:
+# tags:
+#   <tag-name>:
+#     description: "<この タグが示すトピックの説明>"
+#
+# 例:
+# tags:
+#   git:
+#     description: "Gitワークフロー・コミット・ブランチ操作に関連するスキル"
+
+tags: {}

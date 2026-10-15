@@ -1,0 +1,15 @@
+{
+  "name": "ai-skill-catalog-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/functions/*.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.2",
+    "dotenv": "^17.4.2",
+    "minisearch": "^7.2.0"
+  }
+}

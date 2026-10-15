@@ -1,0 +1,75 @@
+# Stages run in order (piped); jobs inside a stage run in parallel.
+#   1. fix      — files regenerated/patched from staged sources
+#   2. format   — prettier/ruff over the staged files (after fixers touched them)
+#   3. check    — read-only checks and secret scan over the final staged content
+# tools/internal Python jobs are one in-process entry per stage
+# (tools/internal/precommit), which applies each task's own staged-path globs.
+pre-commit:
+  piped: true
+  jobs:
+    - name: fix
+      group:
+        parallel: true
+        jobs:
+          - name: tools/internal precommit fix
+            glob:
+              - "**/SKILL.md"
+              - "**/skills/**"
+              - "**/.claude-plugin/plugin.json"
+              - "**/.codex-plugin/plugin.json"
+              - ".claude-plugin/marketplace.json"
+              - "ai-tools.yaml"
+              - "tools/**"
+            run: just --justfile tools/internal/justfile precommit-fix
+            stage_fixed: true
+          - name: regenerate hook generated files
+            glob:
+              - "agent-tooling/agent_tooling/core/**"
+              - "agent-tooling/agent_tooling/hooks/common/**"
+              - "agent-tooling/agent_tooling/hooks/scenarios/**"
+              - "agent-tooling/agent_tooling/adapters/**"
+              - "agent-tooling/agent_tooling/hooks/build/**"
+              - ".claude/rules/**"
+            run: just --justfile agent-tooling/justfile generate
+            stage_fixed: true
+          - name: compile gh-aw workflows
+            glob: ".github/workflows/*.md"
+            run: just --justfile .github/workflows/justfile compile
+            stage_fixed: true
+    - name: format
+      group:
+        parallel: true
+        jobs:
+          - name: format Markdown with Prettier
+            glob:
+              - "*.md"
+              - "**/*.md"
+            run: pnpm run format:staged -- {staged_files}
+            stage_fixed: true
+          - name: format Python with ruff
+            glob:
+              - "*.py"
+              - "**/*.py"
+            run: uv run ruff format {staged_files}
+            stage_fixed: true
+    - name: check
+      group:
+        parallel: true
+        jobs:
+          - name: tools/internal precommit check
+            glob:
+              - "**/SKILL.md"
+              - "repo-tools.yaml"
+              - "tools/**/pyproject.toml"
+              - "tools/**/package.json"
+            run: just --justfile tools/internal/justfile precommit-check
+          - name: scan staged files for secrets
+            glob:
+              - "*"
+              - "**/*"
+            run: just --justfile tools/internal/justfile scan-staged-secrets
+
+commit-msg:
+  commands:
+    lint-commit-message:
+      run: pnpm exec commitlint --edit {1}

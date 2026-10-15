@@ -1,0 +1,173 @@
+name: Skill site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills-site/**'
+      - '.github/workflows/skill-site.yml'
+      - 'claude-plugins/**/skills/**'
+      - 'codex-plugins/**/skills/**'
+      - 'copilot-plugins/**/skills/**'
+      - 'cursor-plugins/**/skills/**'
+      - '_agents/plugins/**/skills/**'
+      - '.cline/skills/**'
+      - '.github/skills/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'skills-site/**'
+      - '.github/workflows/skill-site.yml'
+      - 'claude-plugins/**/skills/**'
+      - 'codex-plugins/**/skills/**'
+      - 'copilot-plugins/**/skills/**'
+      - 'cursor-plugins/**/skills/**'
+      - '_agents/plugins/**/skills/**'
+      - '.cline/skills/**'
+      - '.github/skills/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  check-secrets:
+    name: Verify deployment secret
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure AZURE_STATIC_WEB_APPS_API_TOKEN is set
+        env:
+          TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::AZURE_STATIC_WEB_APPS_API_TOKEN が設定されていません。リポジトリの Settings > Secrets and variables > Actions で AZURE_STATIC_WEB_APPS_API_TOKEN シークレットを設定してください。"
+            exit 1
+          fi
+
+  verify:
+    name: Generate, validate, test, and build
+    needs: check-secrets
+    if: always() && (needs.check-secrets.result == 'success' || needs.check-secrets.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build static site
+        env:
+          # OPENROUTER_API_KEY は catalog:build のskill embeddings生成
+          # (openai/text-embedding-3-small, via OpenRouter) に必須。
+          #
+          # なぜ check-secrets ジョブに混ぜず、ここで個別にチェックするか:
+          # check-secrets は `if: (push || workflow_dispatch) && ref == main` 限定で PR では
+          # 実行されない（AZURE_STATIC_WEB_APPS_API_TOKEN はデプロイ専用シークレットのため main
+          # へのpush/workflow_dispatch時だけ検証すれば足りる）。一方この verify ジョブは
+          # push/PR/workflow_dispatch すべてで走る。もしこのチェックを check-secrets に混ぜると、
+          # PRではジョブごとskipされてチェックが素通りしてしまい、下記のfork PR用ガードが効かなくなる。
+          #
+          # Fork PRの挙動（意図的な失敗）:
+          # GitHub Actionsの仕様上、forkからのPRはリポジトリのシークレットを読めず空文字になる
+          # （pull_request_targetを使わない限り）。そのためfork PRでは必ずこのチェックで落ちる。
+          # これはバグではなく意図した安全装置: skills-site/generated/ 等の生成物はgitignore対象で
+          # embedding計算にOPENROUTER_API_KEYが要るため、キーが読めない環境でembedding抜きの
+          # ビルドを黙って通過させてしまうと、不完全な成果物がデプロイされるリスクがある。
+          # 同一リポジトリ内ブランチからのPRやpush/workflow_dispatchは通常通りシークレットを読めるので、
+          # このチェックは通過して普通にビルドされる。
+          #
+          # 早期チェックする理由:
+          # ここでチェックせず`pnpm run build`だけ実行すると、embedding生成スクリプトの内部で
+          # 分かりにくいスタックトレースとして失敗する。事前に明示チェックして::error::を出すことで、
+          # CIログを見た人が「OPENROUTER_API_KEY未設定が原因」だと一目で分かるようにしている。
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::error::OPENROUTER_API_KEY が設定されていません。リポジトリの Settings > Secrets and variables > Actions で OPENROUTER_API_KEY シークレットを設定してください（catalog:build の埋め込み計算に必要）。"
+            exit 1
+          fi
+          pnpm --filter ai-skill-catalog-site run build
+      - name: Validate public output
+        run: pnpm --filter ai-skill-catalog-site run validate
+      - name: Run publication tests
+        run: pnpm --filter ai-skill-catalog-site run test
+      - name: Upload static site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: skills-site-dist
+          path: skills-site/dist
+          retention-days: 1
+      - name: Upload API artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: skills-site-api
+          path: |
+            skills-site/api
+            !skills-site/api/node_modules
+            !skills-site/api/local.settings.json
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Azure Static Web Apps
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Download static site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: skills-site-dist
+          path: skills-site/dist
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: skills-site-api
+          path: skills-site/api
+      - name: Deploy generated static files and API
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: skills-site/dist
+          api_location: skills-site/api
+          output_location: ''
+          skip_app_build: true
+          # OPENROUTER_API_KEY must be set as an SWA Application setting
+          # (Azure Portal → Configuration, or `az staticwebapp appsettings set`).
+          # The deployment token cannot inject app settings.
+      - name: Tag successful deployment
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          tag="deploy-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_SHA::7}"
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "$tag"

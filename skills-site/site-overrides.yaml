@@ -1,0 +1,26 @@
+# skills-site publication overrides.
+#
+# ai-tools.yaml (repository root) is the SSOT for which tool/plugin exists
+# and what ships in the marketplace/skill-catalog outputs. Everything listed
+# there is registered in skills-site/scripts/source-registry.mjs and is a
+# candidate for publication on this site.
+#
+# Use this file when a plugin or an individual skill should keep shipping in
+# the marketplace (i.e. stay in ai-tools.yaml) but must NOT be published on
+# this public site. Do not add anything here that is not already registered
+# in ai-tools.yaml — this file can only hide registered entries, it cannot
+# publish unregistered ones.
+#
+# This file is optional; an empty/missing file excludes nothing.
+
+exclude:
+  # Hide every skill under an entire registered source (plugin root).
+  # Use the source `id` from SOURCE_REGISTRY (see source-registry.mjs), e.g.:
+  # sources:
+  #   - claude-cicd
+
+  # Hide a single skill by its repository-relative SKILL.md path, e.g.:
+  # skills:
+  #   - claude-plugins/others/skills/example-skill/SKILL.md
+  sources: []
+  skills: []

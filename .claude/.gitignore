@@ -1,0 +1,14 @@
+*settings.json
+*settings.local.json
+*.env
+test*.json
+
+# task-tracker: このマシン固有のセッションIDと作業スクラッチのため非公開
+tasks/
+
+# hooks/ は skill-tools の自己インストール先（正本は agent-tooling）。案内の AGENTS.md / CLAUDE.md だけ共有する
+hooks/*
+!hooks/AGENTS.md
+!hooks/CLAUDE.md
+
+skills/skill-maintenance/state/

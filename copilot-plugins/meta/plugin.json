@@ -1,0 +1,28 @@
+{
+  "name": "meta",
+  "description": "Skills for researching and authoring GitHub Copilot, Copilot CLI, VS Code Copilot, agent skills, and agent plugins.",
+  "version": "1.0.0",
+  "author": {
+    "name": "fdshg693",
+    "url": "https://github.com/fdshg693"
+  },
+  "homepage": "https://github.com/fdshg693/AI",
+  "repository": "https://github.com/fdshg693/AI",
+  "keywords": [
+    "github-copilot",
+    "copilot-cli",
+    "vs-code",
+    "agent-skills",
+    "plugins"
+  ],
+  "skills": [
+    "copilot-cli-docs",
+    "github-copilot-docs",
+    "github-copilot-observability-docs",
+    "github-copilot-sdk-docs",
+    "vscode-copilot-docs",
+    "writing-copilot-instructions",
+    "writing-plugins",
+    "writing-skills"
+  ]
+}

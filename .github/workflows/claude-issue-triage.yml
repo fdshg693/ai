@@ -1,0 +1,42 @@
+# Claude Code を利用したGithub Action
+# 公式ドキュメント
+# - https://code.claude.com/docs/en/github-actions
+# 参考にしたサンプル
+# - https://github.com/anthropics/claude-code-action/blob/main/examples/issue-triage.yml
+# `@claude` と Issue にてメンションすることで動作する
+# `ANTHROPIC_API_KEY` の設定が必要
+name: Claude Issue Triage
+description: Run Claude Code for issue triage in GitHub Actions
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage-issue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # リポジトリのOWNER/COLLABORATORが作成したissueのみ起動する（誰でも作れるissueで
+    # 無制限にAPI課金・プロンプトインジェクションを許さないための制限）
+    if: contains(fromJSON('["OWNER", "COLLABORATOR"]'), github.event.issue.author_association)
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code for Issue Triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # このレポジトリ自身のマーケットプレイスを登録する
+          plugin_marketplaces: "${{ github.server_url }}/${{ github.repository }}.git"
+          # プラグインを登録する
+          plugins: "seiwan-marketplace@github-action"
+          prompt: "/github-action:issue-triage REPO: ${{ github.repository }} ISSUE_NUMBER: ${{ github.event.issue.number }}"
+
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: "--model claude-sonnet-5 --max-turns 10"
