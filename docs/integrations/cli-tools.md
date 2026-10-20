@@ -77,21 +77,22 @@ tav search "Microsoft Fabric overview" --topic msfabric_overview
 対象パッケージについて、`.github/workflows/tool-release.yml` が main ブランチへの push をトリガーに、パッケージごとの git タグと GitHub Release を自動発行する。スケジュール実行ではなく「`pyproject.toml` のバージョンが上がった」ときだけ発行される（対象タグが既に存在する場合はサイレントにスキップ）。
 
 - タグ命名規則: `<pyprojectのnameフィールド>-v<version>`（例: `aim-cli-v0.1.0`）
-- 対象パッケージの正本は `repo-tools.yaml` の `release: true` なエントリ（`tool-release.yml` の `discover` ジョブが動的に読む。詳細は [repo-tools-config](../repo-wide/repo-tools-config.md) 参照）。以下の表は現状把握用の参考情報（7つ。ワークスペース内の兄弟パッケージに依存しないもののみ）
+- 対象パッケージの正本は `repo-tools.yaml` の `release: true` なエントリ（`tool-release.yml` の `discover` ジョブが動的に読む。詳細は [repo-tools-config](../repo-wide/repo-tools-config.md) 参照）。以下の表は現状把握用の参考情報（8つ。ワークスペース内の兄弟パッケージに依存しないもののみ）
 
-  | パッケージ名  | ディレクトリ      |
-  | ------------- | ----------------- |
-  | `aim-cli`     | `tools/aim`       |
-  | `grepapp-cli` | `tools/grepapp`   |
-  | `tav-cli`     | `tools/tav-cli`   |
-  | `mslearn-cli` | `tools/mslearn`   |
-  | `awsdocs-cli` | `tools/awsdocs`   |
-  | `ctx7-cli`    | `tools/ctx7`      |
-  | `textgraph`   | `tools/textgraph` |
+  | パッケージ名   | ディレクトリ      |
+  | -------------- | ----------------- |
+  | `aim-cli`      | `tools/aim`       |
+  | `grepapp-cli`  | `tools/grepapp`   |
+  | `tav-cli`      | `tools/tav-cli`   |
+  | `mslearn-cli`  | `tools/mslearn`   |
+  | `awsdocs-cli`  | `tools/awsdocs`   |
+  | `gdevdocs-cli` | `tools/gdevdocs`  |
+  | `ctx7-cli`     | `tools/ctx7`      |
+  | `textgraph`    | `tools/textgraph` |
 
 - `aim-summarize` / `my-agents` は対象外。`[tool.uv.sources]` で workspace 内の兄弟パッケージ（`aim-cli`・`mslearn-cli`・`tav-cli`）を参照しているが、この解決は `uv build` が生成する wheel には反映されず、workspace 外で単体インストールすると壊れるため。`my-agents` は依存パッケージ名（`mslearn-cli`・`tav-cli`）が PyPI 上に存在せず素直にインストールエラーになるが、`aim-summarize` は依存名 `aim-cli` が PyPI 上の無関係な別パッケージ（[Aim](https://aimstack.io/) という MLOps 向け実験管理ツール）に静かに誤解決されてしまい、インストール自体はエラーなく完了した上で実行時に `ModuleNotFoundError` で壊れる（dependency confusion）。このため `justfile` にもこの2パッケージ向けの `-git` レシピは意図的に追加していない。
 
-- ピン留めインストール（対象7パッケージのみ）:
+- ピン留めインストール（対象8パッケージのみ）:
 
   ```bash
   uv tool install "git+https://github.com/fdshg693/AI.git@<tag>#subdirectory=tools/<dir>"

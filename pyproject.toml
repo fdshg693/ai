@@ -19,6 +19,7 @@ members = [
     "tools/tav-cli",
     "tools/mslearn",
     "tools/awsdocs",
+    "tools/gdevdocs",
     "tools/ctx7",
     "tools/pyinspect",
     "tools/grepapp",

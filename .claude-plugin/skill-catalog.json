@@ -178,11 +178,6 @@
       "description": "`tools/aim` のグローバルインストール済み Python 実装をライブラリとして使い、OpenRouter 経由で AI モデルへ単発リクエストを送る方法を説明する。Python コードからプロンプトを送信したい、モデル略記を解決したい、応答本文を取り出したい場合に使う。CLI コマンドを実行する場合は `aim-cli` を使う。"
     },
     {
-      "path": "claude-plugins/my-tools/skills/aim-summarize",
-      "name": "aim-summarize",
-      "description": "リポジトリ内のファイルをファイル単位でAI要約し、SQLite DB（.aim-use/summaries.db）に永続化する`aim-summarize` CLIツールの使い方を説明する。ファイル要約を生成・更新したい、変更されたファイルだけ再要約したい、DBから要約を取得したい場合に使う。"
-    },
-    {
       "path": "claude-plugins/my-tools/skills/aim2-cli",
       "name": "aim2-cli",
       "description": "複数プロバイダ（OpenAI, Anthropic, Google Gemini, OpenRouter, Ollama等）に直接対応したAIモデルCLIツール`aim2`の使い方を説明する。プロンプトをAIモデルに投げて応答を得たい、`--session-id`（互換`--thread-id`）でローカル会話継続したい、プロンプト内の`@path`でファイルやディレクトリの内容を取り込みたい、複数プロンプトを`--parallel`で一括並列実行したい、利用可能なモデル一覧を確認したい場合に使う。"
@@ -191,6 +186,11 @@
       "path": "claude-plugins/my-tools/skills/aws-docs",
       "name": "aws-docs",
       "description": "Search and fetch official AWS documentation (docs.aws.amazon.com, AWS Blog, What's New, re:Post Knowledge Center, CDK/CloudFormation references) and check regional availability via the self-built `awsdocs` CLI, a fastmcp wrapper around the official AWS Knowledge MCP Server (https://knowledge-mcp.global.api.aws). Use when you need AWS service docs, API/SDK/CLI references, troubleshooting articles, recent AWS launches, or whether a service/API/CFN resource is available in a region. Do not use for general web research (use `tav-cli`), Microsoft/Azure docs (use `ms-learn`), or running AWS APIs."
+    },
+    {
+      "path": "claude-plugins/my-tools/skills/gdev-docs",
+      "name": "gdev-docs",
+      "description": "Search, fetch, and answer from official Google Cloud and Google Workspace developer documentation via the self-built `gdevdocs` CLI, a fastmcp wrapper around the Developer Knowledge MCP (https://developerknowledge.googleapis.com/mcp). Use when you need GCP or Workspace developer docs (concepts, APIs, SDKs, configuration, quotas, error explanations). Do not use for general web research (`tav-cli`), Microsoft docs (`ms-learn`), AWS docs (`aws-docs`), operating GCP or Workspace resources, or version-specific client-library APIs (`use-context`)."
     },
     {
       "path": "claude-plugins/my-tools/skills/grep-app",
@@ -235,7 +235,7 @@
     {
       "path": "claude-plugins/my-tools/skills/skill-tools-cli",
       "name": "skill-tools-cli",
-      "description": "ai-tools.yamlに登録済みのAgent Skillを一覧・他プロジェクトへ配置・本文ハイブリッド検索し、目的別workflowを確認し、repo-hooks.yamlのエージェントフックを配置・登録する`skill-tools` CLIの使い方を説明する。手元のプロジェクトへスキルやフックを導入したい、配布対象やworkflowを確認したい、自然文や本文語彙でスキルを検索したい、source（local clone / GitHub）やindexの解決結果を確認したい場合に使う。スキルの新規作成・SKILL.mdの編集自体は対象外。"
+      "description": "ai-tools.yamlに登録済みのAgent Skillを一覧・他プロジェクトへ配置・本文ハイブリッド検索し、目的別workflowを確認し、repo-hooks.yamlのエージェントフックを配置・登録する`skill-tools` CLIの使い方を説明する。手元のプロジェクトへスキルやフックを導入したい、配布対象やworkflowを確認したい、自然文や本文語彙でスキルを検索したい、source（local clone / GitHub）やindexの解決結果を確認したい、スキル・ツール・workflowの使い方フィードバックを`skill-tools --fb`で残したい場合に使う。スキルの新規作成・SKILL.mdの編集自体は対象外。"
     },
     {
       "path": "claude-plugins/my-tools/skills/tav-cli",
@@ -265,7 +265,7 @@
     {
       "path": "claude-plugins/my-tools/skills/use-context",
       "name": "use-context",
-      "description": "Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure and `aws-docs` for AWS official documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls."
+      "description": "Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure, `aws-docs` for AWS, and `gdev-docs` for Google Cloud and Google Workspace developer documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls."
     }
   ],
   "claude-plugins/my-tools-no-install": [
@@ -292,16 +292,6 @@
       "path": "claude-plugins/others/skills/vscode-docs",
       "name": "vscode-docs",
       "description": "Use when answering questions about Visual Studio Code (the editor) features, settings, keybindings, extensions, tasks, debugging, source control, Copilot Chat/Agent mode in VS Code, etc. Grounds answers in the latest official docs (code.visualstudio.com) instead of training-data memory, which may be stale."
-    },
-    {
-      "path": "claude-plugins/others/skills/zenn",
-      "name": "zenn",
-      "description": "ZENN記事を、事前調査→概要提案→ユーザー承認→調査→plan→承認→publish の順で進めるスキル"
-    },
-    {
-      "path": "claude-plugins/others/skills/zenn-refine",
-      "name": "zenn-refine",
-      "description": "既存ZENN記事を改善するスキル"
     }
   ],
   "claude-plugins/special": [

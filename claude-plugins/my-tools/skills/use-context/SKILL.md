@@ -1,6 +1,6 @@
 ---
 name: use-context
-description: Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure and `aws-docs` for AWS official documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls.
+description: Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure, `aws-docs` for AWS, and `gdev-docs` for Google Cloud and Google Workspace developer documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls.
 
 # 前提条件: `ctx7`コマンドがPATH上にインストール済み
 # (`uv tool install --editable tools/ctx7`)であること。このスキルはインストール・
@@ -17,7 +17,7 @@ meta:
   requires_skills: none
   status: experimental
   description: no description
-  version: 1.0.4
+  version: 1.0.5
 ---
 
 ## エントリポイント: `ctx7` コマンド
@@ -42,9 +42,9 @@ ctx7 --help
    Yes -> 配布物の中身・実装・公開モジュールなら inspecting-python-libraries
           （このスキルは使わない）。ドキュメント・セットアップ・移行なら 2へ
 
-2. Microsoft/Azure/.NET/M365 または AWS の公式ドキュメントが対象か?
-   Yes -> Microsoft 系は ms-learn、AWS は aws-docs を優先(このスキルは使わない。
-          boto3 等 AWS SDK の版依存 API シグネチャが要るときだけ aws-docs の後に併用)
+2. Microsoft/Azure/.NET/M365、AWS、または GCP / Google Workspace の開発者向け公式ドキュメントが対象か?
+   Yes -> Microsoft 系は ms-learn、AWS は aws-docs、GCP と Workspace の開発者ドキュメントは gdev-docs を優先(このスキルは使わない。
+          boto3 等 AWS SDK、または GCP クライアントライブラリの版付き API が要るときだけ、公式ドキュメントの後に併用)
    No  -> 3へ
 
 3. 公式 context7-mcp スキル・docs-researcher エージェント・/context7:docs コマンドが
@@ -202,13 +202,14 @@ Uncertainty:
 - Context7の結果を、リリース直後の変更やライブ障害情報の唯一の根拠にする
 - APIキーをスキル、ルール、リポジトリへ直接書き込む(`.env`または環境変数のみ)
 
-## `ms-learn` / `aws-docs` との使い分け
+## `ms-learn` / `aws-docs` / `gdev-docs` との使い分け
 
 Microsoft/Azure/.NET/M365 の**公式ドキュメント・公式コードサンプル**が対象なら、
 まず`ms-learn`スキルを使う(公式一次情報・無料・認証不要・応答が速い)。AWS の公式
 ドキュメント(サービスガイド・CDK/CFN リファレンス・リージョン可用性)なら`aws-docs`を
 使い、boto3 や AWS SDK for JavaScript v3 など SDK の版依存 API が要るときだけこのスキルを
-併用する。それ以外の
+併用する。GCP と Google Workspace の開発者向け公式ドキュメントは`gdev-docs`を使い、
+クライアントライブラリの版付き API は従来どおりこのスキルを使う。それ以外の
 外部ライブラリ・フレームワークの公式ドキュメント・セットアップ・移行ガイドが対象なら
 このスキル(`use-context`)を使う。配布物の中身・実装・公開モジュールは
 `inspecting-python-libraries`。どちらでもない一般的なWeb調査(ニュース、障害状況、製品
@@ -223,6 +224,6 @@ Context7公式の`context7-mcp`スキル・`docs-researcher`エージェント�
 ため、同一セッション内で同じ調査対象に対してこのスキルと公式機能を両方発火
 させない。すでに公式機能側が処理していれば、このスキルは再実行しない
 (上記「最初に見るべき判断フロー」の3を参照)。このスキルは`use-context`固有の
-価値(`ms-learn`とのルーティング、manifest/lockfileによるバージョン確認、ID
+価値(`ms-learn` / `aws-docs` / `gdev-docs` とのルーティング、manifest/lockfileによるバージョン確認、ID
 再利用によるクエリ分割、短い照会と長い調査のコンテキスト分離)を、公式機能が
 未導入・未発火の環境で補うことを目的とする。

@@ -16,7 +16,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.0.7
+  version: 1.0.8
 ---
 
 - aim-lib
@@ -33,26 +33,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.0.6
----
-
-- aim-summarize
----
-name: aim-summarize
-description: リポジトリ内のファイルをファイル単位でAI要約し、SQLite DB（.aim-use/summaries.db）に永続化する`aim-summarize` CLIツールの使い方を説明する。ファイル要約を生成・更新したい、変更されたファイルだけ再要約したい、DBから要約を取得したい場合に使う。
-# 前提条件: `aim-summarize`コマンドがPATH上にインストール済み（`uv tool install --editable tools/aim-use/aim-summarize`）であり、OPENROUTER_API_KEYが設定済み（aim-cliが内部で要求）であること。このスキルはインストール・セットアップは一切行わない
-# このスキルの設計意図・前提条件の背景は tools/aim-use/aim-summarize/README.md および PLAN.md 参照（人間のメンテナ向け）
-meta:
-  tag: []
-  requires_repo_tools: git
-  requires_env: OPENROUTER_API_KEY
-  dependencies: none
-  requires_install: aim-summarize
-  requires_hooks: none
-  requires_skills: aim-cli
-  status: stable
-  description: no description
-  version: 1.0.3
+  version: 1.0.7
 ---
 
 - aim2-cli
@@ -71,7 +52,7 @@ meta:
   requires_skills: none
   status: stable
   description: 複数プロバイダ対応 AI モデル単発呼び出し CLI ツールの使い方
-  version: 1.0.2
+  version: 1.0.3
 ---
 
 - aws-docs
@@ -94,6 +75,29 @@ meta:
   requires_skills: none
   status: experimental
   description: no description
+  version: 0.1.1
+---
+
+- gdev-docs
+---
+name: gdev-docs
+description: Search, fetch, and answer from official Google Cloud and Google Workspace developer documentation via the self-built `gdevdocs` CLI, a fastmcp wrapper around the Developer Knowledge MCP (https://developerknowledge.googleapis.com/mcp). Use when you need GCP or Workspace developer docs (concepts, APIs, SDKs, configuration, quotas, error explanations). Do not use for general web research (`tav-cli`), Microsoft docs (`ms-learn`), AWS docs (`aws-docs`), operating GCP or Workspace resources, or version-specific client-library APIs (`use-context`).
+
+# 前提条件: `gdevdocs` コマンドが PATH 上にインストール済み
+# (`uv tool install --editable tools/gdevdocs`)であり、`GDEVDOCS_API_KEY` が
+# 環境変数かグローバル設定で解決できること。このスキルはインストール・API の有効化を
+# 一切行わない。公式 Agent Skill（google/skills の retrieving-developer-knowledge）も
+# 入れない。設計意図は同階層の README.md（人間のメンテナ向け）。
+meta:
+  tag: []
+  requires_repo_tools: gdevdocs
+  requires_env: GDEVDOCS_API_KEY, GDEVDOCS_MCP_OUTPUT_DIR, GDEVDOCS_MCP_ENDPOINT
+  dependencies: none
+  requires_install: uv tool install --editable tools/gdevdocs
+  requires_hooks: none
+  requires_skills: none
+  status: experimental
+  description: GCP と Workspace の開発者向け公式ドキュメントを gdevdocs で引く
   version: 0.1.0
 ---
 
@@ -116,7 +120,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.0.3
+  version: 1.0.4
 ---
 
 - inspecting-python-libraries
@@ -140,7 +144,7 @@ meta:
   requires_skills: none
   status: experimental
   description: no description
-  version: 1.0.4
+  version: 1.0.5
 ---
 
 - interactive-cli-wrapper
@@ -165,7 +169,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.1.1
+  version: 1.1.2
 ---
 
 - linear-cli
@@ -185,7 +189,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.2.2
+  version: 1.2.3
 ---
 
 - ms-digest
@@ -212,7 +216,7 @@ meta:
   requires_skills: ms-learn, aim-cli
   status: stable
   description: no description
-  version: 1.3.3
+  version: 1.3.4
 ---
 
 - ms-learn
@@ -234,7 +238,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.2.2
+  version: 1.2.3
 ---
 
 - my-agents
@@ -257,7 +261,7 @@ meta:
   requires_skills: ms-learn
   status: stable
   description: no description
-  version: 1.0.3
+  version: 1.0.4
 ---
 
 - ona-run
@@ -277,13 +281,13 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.0.1
+  version: 1.0.2
 ---
 
 - skill-tools-cli
 ---
 name: skill-tools-cli
-description: ai-tools.yamlに登録済みのAgent Skillを一覧・他プロジェクトへ配置・本文ハイブリッド検索し、目的別workflowを確認し、repo-hooks.yamlのエージェントフックを配置・登録する`skill-tools` CLIの使い方を説明する。手元のプロジェクトへスキルやフックを導入したい、配布対象やworkflowを確認したい、自然文や本文語彙でスキルを検索したい、source（local clone / GitHub）やindexの解決結果を確認したい場合に使う。スキルの新規作成・SKILL.mdの編集自体は対象外。
+description: ai-tools.yamlに登録済みのAgent Skillを一覧・他プロジェクトへ配置・本文ハイブリッド検索し、目的別workflowを確認し、repo-hooks.yamlのエージェントフックを配置・登録する`skill-tools` CLIの使い方を説明する。手元のプロジェクトへスキルやフックを導入したい、配布対象やworkflowを確認したい、自然文や本文語彙でスキルを検索したい、source（local clone / GitHub）やindexの解決結果を確認したい、スキル・ツール・workflowの使い方フィードバックを`skill-tools --fb`で残したい場合に使う。スキルの新規作成・SKILL.mdの編集自体は対象外。
 # 前提条件: `skill-tools`コマンドがPATH上にインストール済み（`uv tool install --editable tools/skill-tools`）であり、
 # search / build-index を使う場合は OPENROUTER_API_KEY が設定済みであること。このスキルはインストール・セットアップは一切行わない
 # このスキルの設計意図・前提条件の背景は同階層のREADME.md参照（人間のメンテナ向け）
@@ -296,8 +300,8 @@ meta:
   requires_hooks: none
   requires_skills: none
   status: experimental
-  description: skill-tools CLIのsource解決・install選択子・index運用・フック配置の判断基準
-  version: 1.2.0
+  description: skill-tools CLIのsource解決・install選択子・index運用・フック配置・使い方FBの判断基準
+  version: 1.2.2
 ---
 
 - tav-cli
@@ -325,7 +329,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.2.4
+  version: 1.2.5
 ---
 
 - tav-digest
@@ -352,7 +356,7 @@ meta:
   requires_skills: tav-cli, aim-cli
   status: stable
   description: no description
-  version: 1.0.3
+  version: 1.0.4
 ---
 
 - tav-lib
@@ -369,7 +373,7 @@ meta:
   requires_skills: none
   status: stable
   description: no description
-  version: 1.0.4
+  version: 1.0.5
 ---
 
 - tav-lit
@@ -404,7 +408,7 @@ meta:
   requires_skills: tav-cli
   status: stable
   description: no description
-  version: 1.0.1
+  version: 1.0.2
 ---
 
 - textgraph
@@ -423,13 +427,13 @@ meta:
   requires_skills: none
   status: experimental
   description: テキストローカルリンクの impact / check / fix 判断
-  version: 1.0.1
+  version: 1.0.2
 ---
 
 - use-context
 ---
 name: use-context
-description: Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure and `aws-docs` for AWS official documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls.
+description: Resolve and fetch current, version-aware library/framework documentation, API references, setup instructions, migration guidance, and code examples from Context7 via the self-built `ctx7` CLI (Context7's REST API directly — not the official Context7 MCP server/plugin). Activate when a task depends on an external package's current API, setup, or migration behavior. Prefer `ms-learn` for Microsoft/Azure, `aws-docs` for AWS, and `gdev-docs` for Google Cloud and Google Workspace developer documentation; do not use for general web research or local-code reading. For shipped implementation or a PyPI wheel's contents, use `inspecting-python-libraries`. Skip this skill if the official `context7-mcp` skill, the `docs-researcher` agent, or the `/context7:docs` command has already handled the same lookup in this session, to avoid duplicate calls.
 
 # 前提条件: `ctx7`コマンドがPATH上にインストール済み
 # (`uv tool install --editable tools/ctx7`)であること。このスキルはインストール・
@@ -446,5 +450,5 @@ meta:
   requires_skills: none
   status: experimental
   description: no description
-  version: 1.0.3
+  version: 1.0.5
 ---

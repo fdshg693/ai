@@ -18,6 +18,7 @@ members = [
     "claude-wrapper",
     "ctx7-cli",
     "cursor-wrapper",
+    "gdevdocs-cli",
     "grepapp-cli",
     "interactive-cli-wrapper",
     "model-list",
@@ -700,6 +701,17 @@ server = [
     { name = "watchfiles" },
     { name = "websockets" },
 ]
+
+[[package]]
+name = "gdevdocs-cli"
+version = "0.1.0"
+source = { editable = "tools/gdevdocs" }
+dependencies = [
+    { name = "fastmcp" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "fastmcp" }]
 
 [[package]]
 name = "grepapp-cli"

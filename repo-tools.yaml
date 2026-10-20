@@ -58,12 +58,6 @@ tools:
     path: tools/aim2
     install: "cd tools/aim2 && pnpm add -g ."
     description: tools/aim2/package.json#description
-  aim-summarize:
-    path: tools/aim-use/aim-summarize
-    install: "uv tool install --editable tools/aim-use/aim-summarize"
-    description: tools/aim-use/aim-summarize/pyproject.toml#project.description
-    requires_tools:
-      aim: library
   grepapp:
     path: tools/grepapp
     install: "uv tool install --editable tools/grepapp"
@@ -78,6 +72,11 @@ tools:
     path: tools/awsdocs
     install: "uv tool install --editable tools/awsdocs"
     description: tools/awsdocs/pyproject.toml#project.description
+    release: true
+  gdevdocs:
+    path: tools/gdevdocs
+    install: "uv tool install --editable tools/gdevdocs"
+    description: tools/gdevdocs/pyproject.toml#project.description
     release: true
   tav:
     path: tools/tav-cli
